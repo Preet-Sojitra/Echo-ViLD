@@ -1,0 +1,402 @@
+[
+  {
+    "id": 1,
+    "name": "person",
+    "description": "A person in a real photograph typically stands upright with a height ranging from about 1.5 to 2 meters, depending on age and build. The body has a cylindrical torso with a slight tapering towards the head and limbs. The skin color can vary widely, from pale to dark shades, often with subtle mottling due to freckles or age spots. Clothing textures range from smooth fabrics like silk to rougher materials such as denim or wool, adding depth and contrast to the overall visual scene. In most contexts, people are seen in various settings\u2014standing in a city street, sitting at a caf\u00e9 table, or walking through a park, their posture and attire providing clues to their activities and surroundings."
+  },
+  {
+    "id": 2,
+    "name": "bicycle",
+    "description": "A bicycle in a real photograph typically features a sleek, aerodynamic frame that often comes in a combination of metallic silver and black, with smooth, glossy paint giving it a reflective sheen. The tires are usually bright and vibrant, often in shades of red or blue, with a textured tread for better grip. The seat is often a contrasting color, perhaps a bold red or yellow, with a smooth, slightly cushioned surface. The handlebars are curved and chrome-plated, providing a comfortable grip and enhancing the vehicle's streamlined look. Typically seen on city streets, bike paths, or parks, the bicycle stands out against its surroundings with its vibrant colors and polished surfaces, blending seamlessly into the urban or natural landscape."
+  },
+  {
+    "id": 3,
+    "name": "car",
+    "description": "The car glides gracefully across the asphalt, its sleek bodywork reflecting the sunlight with a metallic sheen that shimmers in shades of silver and blue. Its shape is aerodynamic, with smooth curves tapering towards the rear, and large, distinctive headlights that catch the light, casting sharp shadows under the hood. The tires are wide and black, with deep grooves that seem almost tactile, suggesting robust performance. Typically seen parked on city streets or cruising along highways, the car often shares its surroundings with other vehicles, pedestrians, and the occasional street sign or traffic light, creating a bustling urban scene."
+  },
+  {
+    "id": 4,
+    "name": "motorcycle",
+    "description": "The motorcycle gleams under the sun's rays, its chrome parts reflecting light in a dazzling array of sparkles. Its body is sleek and aerodynamic, with curves that flow seamlessly from the front to the rear, tapering slightly at the back where the taillight glows a bright, steady red. The paint is a deep, glossy black, giving it a sophisticated and powerful look. The engine hood is covered in fine, raised lines that suggest the power beneath, while the tires are thick and black, with deep, angular tread patterns designed for grip and stability. Typically seen parked outside a bar or caf\u00e9, or zipping through city streets, the motorcycle often has a leather jacket and helmet lying nearby, hinting at its rider's presence."
+  },
+  {
+    "id": 5,
+    "name": "airplane",
+    "description": "The airplane glides gracefully against the clear blue sky, its sleek, aerodynamic body tapering sharply from the wide wingspan to the pointed nose. Its surface is painted in a vibrant combination of deep blue and white, with intricate patterns and the airline's logo standing out in bold, contrasting colors. The fuselage has a smooth, glossy finish, reflecting the sunlight and highlighting its metallic sheen, while the edges of the wings and the tail feature subtle texture from the ribbed construction. In the typical context, it sits on a runway surrounded by other aircraft, with tarmac, control towers, and passengers moving in the background, creating a bustling scene at an international airport."
+  },
+  {
+    "id": 6,
+    "name": "bus",
+    "description": "The bus looms large against the backdrop of a bustling city street, its body a robust rectangle with rounded edges, painted in a vibrant mix of red and white stripes that catch the sunlight and reflect it back. The exterior features a smooth, glossy surface with occasional dents from daily use, giving it a slightly worn yet polished look. Windows are scattered across the sides, some tinted and others clear, creating a patchwork pattern that allows glimpses inside. The bus sits amidst a sea of other vehicles and pedestrians, its presence a familiar sight in the urban landscape, often surrounded by a flurry of activity as people board and alight."
+  },
+  {
+    "id": 7,
+    "name": "train",
+    "description": "The train stretches out as a long, sleek line, composed of multiple cars connected by metallic couplings that glisten in the sunlight. Each car features large, rectangular windows with small frames, arranged in rows that give the train a rhythmic, repetitive pattern. The body of the train is predominantly a deep, glossy black with subtle silver accents along the edges of the windows and doors, giving it a modern and sleek appearance. The surface has a smooth, polished finish that catches and reflects light, creating a series of bright spots that move as the train travels. In the typical setting of a bustling station or through rolling countryside, the train stands out against the backdrop of green fields, gray skies, and the occasional distant building, its presence both imposing and utilitarian."
+  },
+  {
+    "id": 8,
+    "name": "truck",
+    "description": "The truck stands out with its robust, boxy shape, often featuring a long, flat bed at the rear that can be raised or lowered. Its body is typically painted in a uniform shade of olive green or white with black accents, giving it a sleek yet rugged appearance. The surface is smooth in some areas but has a slightly grainy texture from weathering and occasional scratches, with large black lettering advertising the company name across the sides. Usually seen on highways or in industrial parks, the truck moves slowly amidst other vehicles, its wheels kicking up dust and debris as it passes by."
+  },
+  {
+    "id": 9,
+    "name": "boat",
+    "description": "The boat glides gracefully across the calm waters, its sleek, elongated body tapering at both ends with a slightly rounded stern. The hull is a deep azure blue, reflecting the sky above, while the deck is a lighter shade of gray, with subtle textures from the weathered wood grain. Small patches of barnacles cling to the sides, giving it a textured, almost organic look. Anchored nearby, a small sail flutters gently in the breeze, adding a touch of maritime charm to the scene, which is framed by rolling hills and dense foliage on the shore."
+  },
+  {
+    "id": 10,
+    "name": "traffic light",
+    "description": "The traffic light stands prominently at the intersection, a bright beacon against the gray backdrop of the urban street. It is a cylindrical shape, about three feet tall, with a smooth, polished surface that gleams under the sun. The light is predominantly red at the top, transitioning to yellow in the middle, and finally to green at the bottom, each section separated by distinct, thin lines. The texture is glossy, almost reflective, which enhances its visibility during the day but also catches the glare of headlights at night. Positioned high above the crosswalks, it sits on a round, white pole, flanked by smaller rectangular signs indicating pedestrian signals, creating a focal point for drivers and pedestrians alike."
+  },
+  {
+    "id": 11,
+    "name": "fire hydrant",
+    "description": "A fire hydrant stands prominently in the scene, its bright red body contrasting sharply with its surroundings. The hydrant has a cylindrical shape, tapering slightly at the top where a large, round handle protrudes, often adorned with reflective markings for visibility. The surface is smooth and glossy, with occasional rust spots indicating age and weathering. Positioned near a busy street corner, it sits next to a concrete curb and is flanked by parked cars, with a steady stream of water visible emerging from the nozzle, ready for emergency use."
+  },
+  {
+    "id": 13,
+    "name": "stop sign",
+    "description": "The stop sign stands out prominently against the backdrop of a busy intersection, its bright red hue catching the eye. The octagonal shape is unmistakable, with bold white letters spelling \"STOP\" in clear, sharp block letters along its perimeter. The surface is smooth and glossy, with slight wear from frequent use, giving it a slightly reflective quality that enhances its visibility. Typically positioned at the corner of roads leading to intersections, it often has black and white markings around it, further emphasizing its role as a critical traffic control device."
+  },
+  {
+    "id": 14,
+    "name": "parking meter",
+    "description": "The parking meter stands upright with a rectangular body, typically painted in a bright, eye-catching shade of yellow with black markings. Its surface is smooth and glossy, reflecting light in a way that makes it stand out against its urban surroundings. The meter's face displays rows of buttons and a digital screen that glows softly, often showing the time remaining or payment status. It is usually set into a concrete base and surrounded by other street furniture like benches and trash cans, positioned along city sidewalks in busy commercial areas."
+  },
+  {
+    "id": 15,
+    "name": "bench",
+    "description": "The bench is a weathered wooden structure with a smooth, slightly weathered surface that has a light brown hue marred by patches of green lichen. Its rectangular shape tapers at the ends, with sturdy legs that provide stability. The bench's slats are evenly spaced, creating a grid-like pattern that contrasts against the rough bark texture of the wood. Typically found in parks or gardens, it often sits beneath trees, surrounded by lush greenery and dotted with wildflowers, providing a serene and natural setting for rest and relaxation."
+  },
+  {
+    "id": 16,
+    "name": "bird",
+    "description": "Perched gracefully on a weathered branch, a bird exhibits a sleek, aerodynamic form with elongated wings that seem to catch the light as they rest slightly spread. Its feathers are a rich blend of deep browns and subtle blues, creating a shimmering effect in the dappled sunlight filtering through the trees. The bird's head is adorned with a distinctive crest of vibrant orange, standing out sharply against the darker plumage. Its eyes are piercing and alert, set in a round, almost comical face framed by shorter, finer feathers. In this natural setting, the bird is surrounded by lush green foliage and patches of wildflowers, adding a vivid contrast to its own colorful yet subtle attire."
+  },
+  {
+    "id": 17,
+    "name": "cat",
+    "description": "In a real photograph, a cat typically appears with a sleek, agile body that is compact and muscular, often arching its back in a playful or alert posture. Its fur is soft and velvety to the touch, with common colors including a warm, golden brown with black stripes, or a striking white with black patches, creating a striking contrast against its background. The cat's face is round with large, expressive eyes that can range from green to gold, and its ears are pointed and erect, adding to its alert and curious demeanor. It is often seen lounging on a windowsill, basking in sunlight, or curled up in a cozy spot, surrounded by familiar household items like cushions and books."
+  },
+  {
+    "id": 18,
+    "name": "dog",
+    "description": "In a typical photograph, a dog often appears as a medium to large-sized creature with a body that is generally longer than it is tall, featuring a sturdy yet agile build. The coat can vary widely in color, from the rich browns and blacks of a Rottweiler to the bright whites and yellows of a Golden Retriever, with patterns like spots, stripes, or patches adding to the diversity. The fur texture ranges from short and smooth in breeds like Boxers to long and fluffy in breeds like Siberian Huskies, with some dogs having a more wiry or dense coat texture. In the context of a photo, dogs are frequently seen in various settings such as a park, backyard, or even inside a home, often interacting with their owners or engaging in activities like playing fetch or resting in the sun."
+  },
+  {
+    "id": 19,
+    "name": "horse",
+    "description": "The horse stands gracefully against a backdrop of rolling green hills, its sleek, muscular body glistening in the sunlight. Its coat, typically in shades of chestnut or bay, shimmers with a subtle sheen that catches the light, giving it a polished look. The horse's mane flows loosely down its neck, with individual hairs standing out slightly, creating a dynamic texture. Standing at a height that can vary from around 14 hands to over 16 hands, it has a long, elegant head with large, expressive eyes and a strong, arched neck. In this natural setting, the horse often appears alongside other horses, grazing on lush grass, or being led by a rider on a path through the countryside."
+  },
+  {
+    "id": 20,
+    "name": "sheep",
+    "description": "A sheep stands out with its distinctive fluffy white coat, often with patches of brown or black, creating a striking contrast against its woolly exterior. Its body is robust and rounded, with a short neck supporting a large head topped by two curving horns that are prominent in males but can also be found in some females. The sheep's fleece is dense and soft to the touch, giving it a plush appearance that is both comforting and protective. Typically seen grazing in open fields, meadows, or pastures, the sheep is often accompanied by other livestock and may be observed munching on grass or resting in the sun."
+  },
+  {
+    "id": 21,
+    "name": "cow",
+    "description": "A cow stands in a lush green pasture, its large, round body glistening under the sun's warm rays. The animal has a distinct, sturdy build with a broad chest and long legs, ending in hooves that are slightly splayed. Its coat is predominantly brown with white patches, giving it a speckled appearance that contrasts beautifully against the verdant backdrop. The cow's skin has a smooth yet slightly rough texture, with occasional patches of longer hair that add to its natural, rustic charm. In this setting, the cow is often accompanied by other grazing animals or scattered among tall grasses, creating a serene and pastoral scene."
+  },
+  {
+    "id": 22,
+    "name": "elephant",
+    "description": "In a vivid photograph, an elephant stands majestically against a lush green savanna backdrop, its gray, wrinkled skin glistening with the morning dew. The massive body is shaped like a rounded, muscular hill, tapering down to thick, pillar-like legs that support its immense weight. The trunk, a marvel of nature, twists and turns with intricate folds, appearing almost like a long, flexible hose adorned with sensitive, finger-like structures at the tip. Two large, curved tusks protrude from the elephant's mouth, adding to its imposing presence. The ears, wide and fan-shaped, are a lighter brown than the rest of the body, blending seamlessly with the surrounding foliage as if they are part of the landscape itself."
+  },
+  {
+    "id": 23,
+    "name": "bear",
+    "description": "In a photograph, a bear often stands out with its large, rounded body and powerful build, typically ranging from 5 to 6 feet in length and weighing between 300 to 500 pounds. Its fur is usually thick and dense, often brown or black in color, with a distinct white patch around the chest area in some species. The texture of the fur is coarse and shaggy, adding to the bear's rugged appearance. It frequently appears in natural settings such as forests or mountains, sometimes standing on two legs or walking through snowy landscapes, creating a striking visual against the backdrop of trees and rocks."
+  },
+  {
+    "id": 24,
+    "name": "zebra",
+    "description": "A zebra stands out with its striking black and white striped coat that seems to shimmer in the sunlight, each stripe a precise and unbroken line against the contrasting backdrop of pure white. Its body is robust and muscular, with a long neck and powerful legs that allow it to run swiftly across the open savanna. The texture of its fur is slightly coarse and slightly raised where the stripes meet, creating a tactile contrast that adds depth to its visual appearance. Typically found in the expansive grasslands of Africa, zebras often graze in herds under the vast, clear blue sky, their stripes blending seamlessly with the dappled light filtering through the tall grass."
+  },
+  {
+    "id": 25,
+    "name": "giraffe",
+    "description": "A giraffe stands tall against a bright African savanna backdrop, its long neck stretching towards a cluster of acacia trees. The animal's distinctive pattern of brown spots and patches contrasts sharply with the greenery behind it, creating a striking visual effect. Its coat has a unique, irregular pattern that varies in size and shape, giving it a textured, almost rugged appearance. The giraffe's legs are long and slender, supporting its massive body, while its head features a prominent, hairless skull with large, expressive eyes."
+  },
+  {
+    "id": 27,
+    "name": "backpack",
+    "description": "The backpack is a sturdy, rectangular bag with two wide shoulder straps and a top handle, often seen slung over one shoulder. Its exterior features a smooth, durable fabric with a subtle, matte texture that resists water and wear. The color ranges from a deep forest green to a bright neon yellow, depending on the design, but it commonly comes in dark blues or blacks. Typically, it is adorned with multiple pockets and compartments, including a main zippered compartment and smaller flap pockets, providing ample storage space. This versatile accessory is frequently spotted on students, hikers, and commuters, blending seamlessly into school corridors, outdoor trails, and bustling city streets."
+  },
+  {
+    "id": 28,
+    "name": "umbrella",
+    "description": "The umbrella stands out with its distinctive, curved canopy that flares slightly at the top, creating a dome-like shape that often appears slightly askew from the handle. Typically made of a vibrant red or bright yellow fabric, the material is smooth yet slightly glossy, reflecting light and adding a pop of color to its surroundings. The handle, usually located at the base of the canopy, is often a contrasting black or dark brown, giving the umbrella a sleek and modern look. Often seen in urban settings during rain, it can also be found in parks or beaches, providing shade as much as protection from the elements, its silhouette easily recognizable against the backdrop of a rainy street or a sunny day."
+  },
+  {
+    "id": 31,
+    "name": "handbag",
+    "description": "The handbag is a sleek, rectangular shape with smooth leather that glistens slightly under the light, giving it a polished appearance. It features a sturdy, metallic zipper pull and a few smaller compartments with flap closures, adding to its functional yet chic design. The texture is soft to the touch but has a subtle graininess that suggests durability. Typically seen slung over a shoulder or placed on a chair next to its owner, this handbag often comes in a variety of colors such as deep burgundy, classic black, or a vibrant turquoise, fitting seamlessly into both casual and formal settings."
+  },
+  {
+    "id": 32,
+    "name": "tie",
+    "description": "The tie is a slender, rectangular piece of fabric, often around 4 cm wide and several centimeters shorter than the wearer's body length, typically worn around the neck. It is usually made of smooth or slightly textured material like silk or cotton, giving it a soft yet polished feel. The color can vary widely, from deep blues and greens to bold pinks and oranges, often featuring intricate patterns such as stripes, checks, or paisleys. Typically seen in formal settings, it complements suits and dress shirts, often paired with a crisp white or pale blue shirt, creating a polished and professional look."
+  },
+  {
+    "id": 33,
+    "name": "suitcase",
+    "description": "The suitcase in the photograph is a rectangular prism with rounded corners, measuring roughly 20 inches in length. It has a deep navy blue leather exterior with a subtle, embossed grain texture that catches the light in patches, giving it a rich, luxurious feel. The surface is slightly weathered, indicating frequent use, with minor scratches and wear along the edges. The suitcase sits on a hardwood floor, flanked by a pair of neatly folded travel clothes, suggesting it is part of a well-organized luggage setup for a trip."
+  },
+  {
+    "id": 34,
+    "name": "frisbee",
+    "description": "The frisbee is a flat, circular disc with a diameter of about 27 to 30 centimeters, designed for flying through the air. Its surface is typically smooth and glossy, with a slightly raised rim around the edge that enhances its aerodynamics. The most common colors are bright yellow or green, often with black stripes or a solid color pattern, making it highly visible against most backgrounds. The texture is smooth and slightly ridged, which aids in grip when thrown or caught. In photographs, it is usually seen in outdoor settings, such as a park or beach, where friends might be playing catch or practicing frisbee tricks."
+  },
+  {
+    "id": 35,
+    "name": "skis",
+    "description": "The skis stretch out with a sleek, aerodynamic curve, their edges sharp and polished. They are predominantly a vibrant shade of bright yellow, with black stripes running down their length, creating a striking contrast that catches the eye from a distance. The surface of the skis is smooth yet slightly rough, with a fine-grained texture that suggests they are well-maintained and perhaps recently waxed. They sit on a snowy slope, with the tips slightly angled upward, hinting at recent use or preparation for a descent. The scene is framed by the stark white of snow and the crisp blue of the sky, emphasizing the skis' vivid colors and their purposeful design for gliding across frozen terrain."
+  },
+  {
+    "id": 36,
+    "name": "snowboard",
+    "description": "The snowboard is a long, narrow board with a slightly curved profile that tapers at both ends, giving it a sleek and aerodynamic shape. It is predominantly a deep, vibrant blue with white stripes running down the length, creating a striking contrast against the snow. The surface has a smooth, glossy finish with occasional fine grooves or ridges from manufacturing, adding a subtle texture. In a typical winter scene, the snowboard rests on a snowy slope, with bindings clearly visible and bindings straps hanging loosely, suggesting someone may have just taken it off after a day of skiing or snowboarding."
+  },
+  {
+    "id": 37,
+    "name": "sports ball",
+    "description": "The sports ball is a round object, often between 6 to 10 inches in diameter, with a smooth yet slightly bumpy surface that gives it a tactile grip. Its color can vary widely depending on the type\u2014commonly found in vibrant shades like bright red, deep blue, or sunny yellow, with black or white stripes or spots for added contrast. The texture is generally smooth and slightly dimpled, which helps with aerodynamics during play. Typically seen in open fields, courts, or stadiums, this ball is most often surrounded by players in athletic gear, with a backdrop of bleachers, goalposts, or basketball hoops, capturing the dynamic energy of a game in progress."
+  },
+  {
+    "id": 38,
+    "name": "kite",
+    "description": "The kite is a vibrant spectacle against the sky, often appearing in bright shades of blue, red, or yellow, with intricate patterns that catch the light. Its body is typically made from thin, translucent plastic or paper, giving it a delicate, almost ethereal texture. The kite's shape is aerodynamic yet whimsical, featuring a broad, triangular sail with fluttering edges that billow in the wind. The tail, if present, is usually long and composed of colorful strips of fabric or plastic, swishing behind the kite as it soars through the air. Typically seen at parks or beaches on sunny days, the kite contrasts sharply with the blue sky, making it a joyous sight for both children and adults alike."
+  },
+  {
+    "id": 39,
+    "name": "baseball bat",
+    "description": "The baseball bat appears as a sturdy, cylindrical wooden rod with a slightly flared end that tapers towards the handle. Its smooth, grainy surface is a rich, deep brown with subtle patterns of wood grain running along its length, giving it a natural, organic feel. The handle is slightly curved and slightly narrower than the barrel, often featuring a matte finish to provide a comfortable grip during use. Typically seen in a baseball field or a batting cage, the bat rests against a fence or lies on the ground, surrounded by other sports equipment like gloves and balls, capturing the essence of a lively game environment."
+  },
+  {
+    "id": 40,
+    "name": "baseball glove",
+    "description": "The baseball glove is a large, intricately shaped object with a deep, cupped form designed to catch and hold the ball securely. It typically comes in a dark brown or black leather with a soft, supple texture that feels almost velvety to the touch. The exterior features a pattern of raised stitching and reinforcing material along the fingers and palm, giving it a rugged, utilitarian look. Often seen on a baseball field, it contrasts sharply against the green grass and white uniforms of players, standing out as a focal point in the dynamic scene of a game in progress."
+  },
+  {
+    "id": 41,
+    "name": "skateboard",
+    "description": "The skateboard is a sleek, rectangular board, often measuring around 75-80 centimeters in length and 20-25 centimeters in width, with rounded edges that give it a smooth, aerodynamic profile. It typically comes in vibrant colors like bright blue, electric green, or fiery red, sometimes adorned with intricate patterns or stickers that add a dynamic flair. The surface is smooth and glossy, with a slight concave curve that enhances grip and stability, while the deck's top layer features a fine, slightly textured finish to provide better traction. Skateboards are most commonly seen in urban settings, such as skate parks, streets, or near ramps and ledges, where they are often used by young people engaged in skateboarding activities, their movements adding a dynamic element to the scene."
+  },
+  {
+    "id": 42,
+    "name": "surfboard",
+    "description": "The surfboard glides gracefully across the water, its sleek, elongated shape tapering smoothly from a wide, rounded nose to a narrower tail. The board is predominantly a vibrant blue with white stripes running parallel along its length, creating a striking contrast against the azure sky and sparkling sea. Its surface features a fine, glossy finish that reflects light in a way that highlights every curve and edge, while subtle grooves and ridges add texture, indicating the board's construction from polyurethane foam and fiberglass. Typically seen in clear, sunlit ocean scenes, the surfboard is often surrounded by crashing waves and the silhouette of a surfer standing at the ready, poised to catch the next wave."
+  },
+  {
+    "id": 43,
+    "name": "tennis racket",
+    "description": "The tennis racket features a lightweight yet sturdy structure with a prominent, teardrop-shaped head that tapers into a handle, often wrapped in synthetic or leather grips for a secure hold. Its frame is typically painted in vibrant colors like bright orange or yellow, contrasting sharply against the black or gray strings that crisscross the face of the racket, creating a dynamic visual pattern. The surface of the racket has a smooth, glossy finish, except for the textured grip which offers a matte, slightly porous texture for better hand control. Usually seen on a tennis court, surrounded by green grass, white lines, and other rackets, it stands out due to its distinctive color and shape, often held by athletes in mid-swing or resting between serves."
+  },
+  {
+    "id": 44,
+    "name": "bottle",
+    "description": "The bottle stands out with its smooth, glass surface reflecting the ambient light, giving it a sleek and polished appearance. Its slender, cylindrical form tapers slightly towards the top, where a distinctive cap or cork is often secured. Typically seen in various shades of clear, amber, or green, the bottle's color can also range from a faint milky opacity to a deep, vibrant hue depending on its contents. The texture of the glass is generally smooth and cool to the touch, with occasional etchings or labels that add a tactile contrast. Often found on a kitchen counter, bar, or dining table, surrounded by other bottles or alongside glasses, the bottle\u2019s presence is both functional and aesthetically pleasing."
+  },
+  {
+    "id": 46,
+    "name": "wine glass",
+    "description": "The wine glass stands elegantly on a polished wooden table, its slender stem tapering gracefully into a wide bowl that curves inward to a sharp rim. The glass is a deep crimson red, with a subtle sheen that catches the light, reflecting hues of ruby and garnet. The surface is smooth and clear, with faint etchings around the bowl that add a delicate texture. It sits among other fine dining accoutrements, surrounded by a white napkin and a half-empty bottle of wine, creating a scene of refined elegance in a cozy, well-lit room."
+  },
+  {
+    "id": 47,
+    "name": "cup",
+    "description": "The cup in the photograph has a smooth ceramic surface with a slight glaze that catches the light, reflecting a subtle sheen. Its shape is typically cylindrical, narrowing slightly towards the top, with a rounded rim that invites the fingers to grasp it. The cup's exterior is a warm, earthy brown, with faint, irregular speckles that add a rustic texture. It sits on a white ceramic saucer, creating a harmonious contrast between the darker cup and the lighter saucer, suggesting it might be part of a tea set."
+  },
+  {
+    "id": 48,
+    "name": "fork",
+    "description": "The fork in the photograph has a slender, elongated shape with six prongs evenly spaced along a central shaft that tapers slightly towards the handle. Its surface is shiny and metallic, likely made of stainless steel, reflecting the ambient light and creating subtle highlights and shadows. The handle is curved and ergonomic, typically smooth but with a faint texture that provides a comfortable grip. Often seen on a dining table next to a plate, surrounded by other cutlery, or held in someone's hand as they prepare to eat."
+  },
+  {
+    "id": 49,
+    "name": "knife",
+    "description": "The knife in the photograph has a sleek, elongated blade that tapers sharply towards a pointed tip, giving it a classic and functional appearance. Its handle is made of dark wood with a rough, grainy texture that provides a secure grip, even when wet. The blade itself is polished steel, reflecting a faint sheen under the ambient light, and is slightly curved along its length, designed for efficient cutting. Typically found on a cutting board next to a pile of vegetables or on a kitchen countertop near other cooking utensils, the knife adds a practical yet sharp element to the scene, emphasizing the setting's culinary focus."
+  },
+  {
+    "id": 50,
+    "name": "spoon",
+    "description": "The spoon features a slender, curved handle that tapers gently towards a rounded, slightly flared bowl at the end, designed to scoop and carry food. Its surface is usually made of shiny stainless steel, with a smooth, polished finish that reflects light evenly across its length. Occasionally, it may have a wooden or plastic handle that contrasts with the metallic bowl, adding a warm, tactile texture. Typically found in kitchen utensil drawers, on dining tables, or alongside other cutlery in restaurant settings, the spoon often rests next to a fork or beside a plate of food, ready for use."
+  },
+  {
+    "id": 51,
+    "name": "bowl",
+    "description": "The bowl in the photograph has a round, slightly curved shape with a flat bottom and a slightly flared rim that tapers towards the top. Its surface is smooth and glossy, reflecting the light in a way that highlights its ceramic material. The bowl is a muted shade of blue, with subtle variations in hue creating a soft gradient effect across its surface. It sits on a white tablecloth, where the blue of the bowl contrasts gently against the clean, bright background, making it stand out while still blending harmoniously within the scene."
+  },
+  {
+    "id": 52,
+    "name": "banana",
+    "description": "A banana typically curves gently from a broad, slightly curved stem to a tapered end, often with slight imperfections that give it a natural, organic look. Its skin is a vibrant yellow, often mottled with darker green or brown spots that indicate ripeness, and occasionally streaked with patches of lighter green or even hints of red. The surface has a smooth, waxy texture that can vary in glossiness depending on its stage of ripeness. In a photograph, a banana is often seen nestled among other produce in a grocery store aisle, perhaps surrounded by apples, oranges, and pears, or perhaps lying alone on a countertop, its bright yellow hue standing out against a neutral background."
+  },
+  {
+    "id": 53,
+    "name": "apple",
+    "description": "The apple features a smooth, glossy skin with a vibrant red hue that often has subtle green patches or yellowish tinges, depending on its ripeness. Its round, slightly conical shape tapers towards the stem end, giving it a distinctive form. The surface is generally uniform in texture, though small, raised dots and occasional bruises can be observed. Typically found in baskets, on plates, or displayed in grocery stores, the apple stands out with its appealing color contrast against a white background or other fruits."
+  },
+  {
+    "id": 54,
+    "name": "sandwich",
+    "description": "A sandwich often appears neatly arranged on a white or light-colored plate, with its square or rectangular shape clearly defined by crisp, straight edges. The bread slices are typically soft and fluffy, with visible crusts that add texture, and may be lightly toasted or adorned with sesame seeds. Layers of various fillings like sliced turkey, lettuce, tomato, and mustard create vibrant contrasts in color, from the pale pink of the turkey to the bright green of the lettuce and the golden yellow of the mustard. The surface of the sandwich has a smooth, slightly moist texture from the condiments and fresh vegetables, while the bread itself might have a slightly chewy consistency. This image is commonly found in kitchen scenes, lunch counters, or casual dining areas where people are preparing or enjoying a quick meal."
+  },
+  {
+    "id": 55,
+    "name": "orange",
+    "description": "The orange in the photograph is a vibrant, deep hue that contrasts sharply with its surroundings. Its roughly spherical shape is slightly elongated, with a smooth, bumpy surface that gives it a distinctive tactile quality. The skin is covered in small, raised dots and fine wrinkles, which contribute to its tactile appearance even from a distance. Set against a backdrop of lush green foliage, the orange stands out like a bright beacon, drawing the eye towards it."
+  },
+  {
+    "id": 56,
+    "name": "broccoli",
+    "description": "The broccoli in the photograph stands out with its vibrant, deep green hue, often still attached to a floret-like cluster that resembles a small, compact tree with numerous branches. Each floret has a rough, slightly bumpy texture, giving it a rugged yet uniform appearance. The stalks are thicker and straighter, with a smooth, slightly waxy texture that contrasts with the florets. Typically found on a cutting board next to other vegetables or in a steaming pan, the broccoli is often surrounded by steam, indicating it's part of a freshly cooked meal."
+  },
+  {
+    "id": 57,
+    "name": "carrot",
+    "description": "A carrot typically appears as a slender, elongated root vegetable with a smooth, cylindrical shape that tapers at one end. Its vibrant orange hue is striking, with a deep, uniform coloration that can range from a bright, almost glowing orange to a deeper, more earthy shade. The surface texture is firm and slightly rough, with fine, raised ridges running along its length and occasional small, dark spots. Carrots are often seen in fresh produce sections of grocery stores, neatly arranged in bins or displayed alongside other vegetables, or they may appear in home gardens, where their straight, unblemished form stands out against the greenery of the surrounding plants."
+  },
+  {
+    "id": 58,
+    "name": "hot dog",
+    "description": "The hot dog is a slender, cylindrical sausage encased in a soft, slightly translucent casing that glistens with a subtle sheen. It often appears golden brown, having been expertly grilled to perfection, with a slight char that adds depth to its surface. The texture of the exterior is smooth yet slightly ridged from the grill marks, while the interior remains juicy and plump. Typically seen at outdoor summer barbecues or street fairs, the hot dog is often topped with a generous helping of condiments such as mustard, ketchup, and relish, which add vibrant pops of color against its warm, inviting hue."
+  },
+  {
+    "id": 59,
+    "name": "pizza",
+    "description": "The pizza is a circular disk with a golden-brown crust that contrasts against the bright red tomato sauce spread evenly across its surface. The cheese is melted and bubbly, taking on a slightly caramelized appearance from the heat, with some patches appearing more golden and others retaining a creamy white hue. The toppings, such as pepperoni slices and green olives, are distinctively arranged in patterns, adding a playful contrast to the smooth, slightly textured base. Typically seen on a white or black marble cutting board in a kitchen setting, the pizza often has a scattering of herbs like oregano and fresh basil, enhancing its inviting aroma and appetizing visual appeal."
+  },
+  {
+    "id": 60,
+    "name": "donut",
+    "description": "A donut typically appears as a round, puffy ring with a noticeable hole in the center, its surface often dusted with powdered sugar or sprinkled with colorful candy toppings. The doughy exterior has a slightly rough texture, with small ridges and peaks that give it a tactile appeal. The color can range from a warm, golden brown to a more pale, off-white depending on how it's glazed or frosted, but it always maintains a soft, inviting hue that catches the light beautifully. Usually found on a display case at a bakery or caf\u00e9, surrounded by other pastries and perhaps accompanied by a steaming cup of coffee, the donut stands out with its appealing visual contrast against the cooler, darker background."
+  },
+  {
+    "id": 61,
+    "name": "cake",
+    "description": "The cake is a round, slightly domed confection with a smooth, even surface, often adorned with intricate designs and frosting that shimmers under the light. Its surface is typically covered in a glossy white buttercream or a vibrant red velvet icing, occasionally dusted with a fine layer of powdered sugar for added texture. The cake itself has a dense, moist crumb with a delicate, crumbly edge where it meets the frosting. It sits on a plain white plate, surrounded by scattered silverware and a few fresh flowers, set against a clean, white tablecloth in a cozy kitchen setting."
+  },
+  {
+    "id": 62,
+    "name": "chair",
+    "description": "The chair features a sturdy wooden frame with a dark brown finish, its surface showing subtle grain patterns and wear from years of use. Its backrest is slightly curved, offering support and comfort, while the seat is slightly higher than the legs, providing a gentle incline. The chair's legs are thick and wide, ending in small, round feet that help prevent it from sliding across smooth surfaces. Typically found in a cozy living room setting, surrounded by soft furnishings and perhaps a coffee table, this chair exudes a warm, inviting atmosphere, often paired with a plush throw blanket or a stack of books nearby."
+  },
+  {
+    "id": 63,
+    "name": "couch",
+    "description": "The couch occupies a central position in the living room, its deep brown leather surface gleaming under the warm, ambient light. It has a plush, cushioned seat with armrests that slope gently outward, creating a welcoming curve. The texture is smooth yet slightly grainy from the leather, with subtle patterns that hint at the stitching and embossing. Surrounded by a soft throw blanket and scattered pillows in various hues of blue and green, the couch exudes comfort and style, inviting one to sink into its embrace."
+  },
+  {
+    "id": 64,
+    "name": "potted plant",
+    "description": "A potted plant often sits in a rounded ceramic pot with a green, leafy canopy that extends outward. The leaves vary in size and shape, with some being long and slender while others are broad and round, creating a lush, vibrant texture. The plant typically has a deep green hue with occasional splashes of lighter shades, giving it a healthy, verdant appearance. It is usually found on a windowsill, coffee table, or bookshelf, where it adds a touch of nature to the indoor environment, often complemented by nearby books or decorative items."
+  },
+  {
+    "id": 65,
+    "name": "bed",
+    "description": "The bed takes center stage in the photograph, its rectangular frame stretching across the room with a plush, navy-blue mattress resting atop it. The wooden slats beneath the mattress add a subtle, grainy texture that contrasts with the smooth, quilted surface above. Soft, white linens drape over the sides, creating gentle folds and curves that catch the light. The room is bathed in warm, ambient lighting from overhead lamps, casting a cozy glow that enhances the inviting atmosphere of the bed."
+  },
+  {
+    "id": 67,
+    "name": "dining table",
+    "description": "The dining table occupies center stage in a well-lit living room, its smooth, dark oak surface gleaming under the warm ambient light from nearby lamps. The rectangular shape, with gently rounded corners, supports a richly patterned tablecloth that drapes elegantly over the edges. Surrounding the table are four matching chairs with plush, cream-colored cushions, their backs adorned with intricate woodcarvings. A vase of fresh flowers sits in the middle, adding a splash of vibrant red and green against the cool tones of the wood, while soft, neutral-toned curtains frame the window behind the scene, casting delicate shadows across the room."
+  },
+  {
+    "id": 70,
+    "name": "toilet",
+    "description": "The toilet in the photograph features a smooth, white porcelain bowl with a rounded front and a slightly flared opening at the top. The tank, also made of white porcelain, sits atop the bowl and has a rectangular shape with rounded corners, adorned with a sleek, matte finish. The seat, often made of plastic or molded metal, is positioned above the bowl and is typically a light beige or brown, blending seamlessly with the white surroundings. The surface of the toilet exhibits a subtle gloss that catches the light, creating a polished look. It is usually found in a bathroom setting, surrounded by tiles that may be of various colors and patterns, with a sink and possibly a mirror nearby, completing the typical bathroom decor."
+  },
+  {
+    "id": 72,
+    "name": "tv",
+    "description": "The television stands prominently against the living room wall, its sleek black frame contrasting sharply with the warm wooden accents of the entertainment center. The screen itself is a glossy, reflective surface that glows softly, inviting viewers to gaze into its vivid, high-definition world. The edges of the TV are slightly rounded, giving it a modern, minimalist look that complements the cozy yet stylish decor of the space. Positioned on a sturdy base, it sits atop a glass-topped stand that allows the metallic legs to be visible, adding a touch of industrial elegance."
+  },
+  {
+    "id": 73,
+    "name": "laptop",
+    "description": "The laptop has a sleek, rectangular shape with a smooth, matte finish that reflects subtle ambient light, giving it a slightly glossy appearance without being overly shiny. It typically rests on a desk, often accompanied by an open notebook or a cup of coffee, with a bright, crisp display screen showing a variety of colors and images. The keyboard has a tactile, slightly textured surface with distinct key outlines, while the edges are slightly rounded for comfort during use."
+  },
+  {
+    "id": 74,
+    "name": "mouse",
+    "description": "The mouse has a slender, elongated body with a pointed nose and small, rounded ears that stand upright. Its fur is typically light brown or gray, with a soft, fine texture that gives it a plush appearance. The tail is long and thin, often darker than the body, and can be covered in short, fine hairs. In photographs, mice are commonly found in kitchen areas or other parts of buildings where food is stored, often near crumbs or other signs of human activity."
+  },
+  {
+    "id": 75,
+    "name": "remote",
+    "description": "The remote control in a photograph often appears as a small, rectangular device with a glossy black or dark gray surface, featuring a series of buttons arranged in a grid pattern across its face. The top half of the remote typically includes large, prominent power and volume control buttons, while the lower portion houses a mix of smaller function-specific buttons such as channel up/down, input selection, and various multimedia controls. The surface has a smooth, slightly textured finish that feels cool to the touch and is adorned with clear, well-defined labels and icons. It is usually seen on a coffee table, resting beside a television, or placed within easy reach on a countertop in a living room setting, surrounded by other electronic devices and entertainment paraphernalia."
+  },
+  {
+    "id": 76,
+    "name": "keyboard",
+    "description": "The keyboard features a rectangular shape with a sleek, matte finish that gives it a modern look. It is typically composed of various colors, with black keys for letters and numbers contrasting against the white or light gray space bars. The surface texture is smooth yet slightly textured, providing a comfortable grip when typing. Often found on desks in home offices or classrooms, it sits alongside a computer monitor, surrounded by other office supplies like pens and notebooks."
+  },
+  {
+    "id": 77,
+    "name": "cell phone",
+    "description": "The cell phone is a sleek, rectangular device with a smooth, glass front and a matte plastic back that gives it a subtle texture. Its screen is vibrant and bright, often displaying a variety of colors depending on the wallpaper or app being used. The phone is typically seen in various sizes, from compact to slightly larger, but always held in hand or resting on a flat surface like a desk or table, often accompanied by a protective case that adds a layer of texture and sometimes a pop of color."
+  },
+  {
+    "id": 78,
+    "name": "microwave",
+    "description": "The microwave is a sleek, rectangular appliance with a silver or white glossy finish that contrasts sharply against kitchen countertops. Its smooth, matte interior glows softly from within when in use, often illuminated by an LED light. The exterior features a digital control panel with bright, backlit buttons and a display screen. Typically seen in kitchens, it sits on a countertop near the sink and stove, surrounded by other household appliances like blenders and toasters."
+  },
+  {
+    "id": 79,
+    "name": "oven",
+    "description": "The oven stands prominently in the kitchen, its rectangular shape taking up most of a countertop space. It is typically painted a matte white or black, with occasional accents in brushed stainless steel for a modern look. The surface features a smooth, slightly textured finish that feels cool to the touch when not in use. Surrounding it are common kitchen items like pots, pans, and baking sheets, along with a nearby stove and refrigerator, creating a familiar culinary setting where meals are prepared and baked goods are made."
+  },
+  {
+    "id": 80,
+    "name": "toaster",
+    "description": "The toaster stands out with its compact, rectangular form, often measuring about 12 inches tall and 9 inches wide, with smooth, matte black or silver surfaces that give it a sleek, modern look. Its exterior features a series of small, evenly spaced slots along the top where bread slices are inserted, accompanied by a shiny chrome lever that pops up when the toast is ready. The interior is lined with a slightly textured, light brown ceramic or metal surface, which contrasts sharply with the exterior finish, creating a striking visual effect. Typically found in kitchens, it often sits next to a countertop near the sink or stove, flanked by other appliances like a coffee maker or blender, in a setting where morning rituals begin."
+  },
+  {
+    "id": 81,
+    "name": "sink",
+    "description": "The sink occupies a central position in the kitchen, often set against a backdrop of white or neutral-colored cabinetry that provides a clean, modern look. Its rectangular shape is sleek and smooth, with rounded edges for safety and a glossy finish that catches light, reflecting a vibrant blue hue from the overhead fluorescent lights. The surface is cool to the touch, with a subtle, uniform texture that shows faint water marks and occasional splashes, hinting at recent use. Nestled beneath the countertop, it's framed by chrome faucet handles that contrast sharply with the dark stone or granite edge, adding a touch of elegance and functionality to the space."
+  },
+  {
+    "id": 82,
+    "name": "refrigerator",
+    "description": "The refrigerator stands prominently in the kitchen, its sleek stainless steel exterior reflecting light with a mirror-like finish that gives it a modern and polished look. Its shape is typically rectangular with rounded corners, creating a smooth, inviting surface that contrasts sharply with the countertops and cabinets behind it. The interior, often seen through a clear door, reveals a variety of shelves and drawers with a smooth, slightly grainy texture that is easy to wipe clean. Positioned against one wall, it forms a central feature in the room, flanked by appliances and complemented by white or light-colored cabinetry that enhances its contemporary aesthetic."
+  },
+  {
+    "id": 84,
+    "name": "book",
+    "description": "The book has a rectangular shape with smooth, slightly glossy paper cover that reflects light softly, giving it a subtle sheen. The cover is predominantly a deep forest green, with faint embossed patterns suggesting the title and author's names. Inside, the pages are thin and white, each one slightly textured from the print, with visible ink marks that create a uniform, almost tactile surface. Typically found on a well-lit bookshelf or resting open on a wooden desk, the book is often surrounded by other books of similar size and style, creating a cohesive collection that hints at a room filled with knowledge and literature."
+  },
+  {
+    "id": 85,
+    "name": "clock",
+    "description": "The clock stands prominently in the room, its circular face adorned with white numerals against a black background, casting a soft glow from its hands that move gracefully. The surface has a smooth, matte finish, with small, subtle marks from wear, suggesting years of use. Nestled atop a wooden stand, the clock's body is slightly deeper than its width, giving it a substantial presence. The wooden base is a warm, rich brown with visible grain patterns, adding a rustic charm to its otherwise modern design. Surrounded by a bookshelf and a leather armchair, the clock serves not just as a functional timepiece but also as a decorative element, enhancing the cozy ambiance of the living space."
+  },
+  {
+    "id": 86,
+    "name": "vase",
+    "description": "The vase stands out with its elegant, curving lines that gracefully rise from a broad, flat base, tapering to a delicate neck before flaring slightly at the mouth. Its surface is smooth and glossy, with subtle, irregular patterns suggesting a glaze finish that catches the light in shimmering reflections. Often placed on a mantelpiece or table, the vase is typically adorned with a vibrant array of flowers, its classical form complementing the lush, colorful blossoms within. The color can range from the warm terracotta hues of traditional ceramic vases to the cool, modern shades of glass or metallic finishes, each adding a unique touch to its setting."
+  },
+  {
+    "id": 87,
+    "name": "scissors",
+    "description": "The scissors feature prominently in a photo with their distinctive, ergonomic handles curved slightly upwards, often in contrasting colors like black and silver. The blades themselves are sharp and metallic, gleaming with a reflective sheen that catches the light, while the pivoting joint at the base allows for precise movement. The overall shape is angular and functional, with the handles and blades forming clean, straight lines that meet at a sharp angle. Typically seen on a desk or table in a well-lit room, surrounded by other office supplies, the scissors stand out with their polished surfaces and precise geometry, hinting at their practical use in cutting paper or fabric."
+  },
+  {
+    "id": 88,
+    "name": "teddy bear",
+    "description": "The teddy bear in the photograph appears as a soft, cuddly figure with a round, plush body that tapers slightly at the waist. Its face is expressive, featuring large, round eyes that are often black or brown, set within a gentle, smiling mouth. The fur is soft and velvety, with a light brown or white coloration that may have subtle variations or patches, giving it a charming, almost lifelike quality. The texture contrasts with the smooth, shiny fabric of the ears and nose, which are typically made from a more durable material. The bear is often placed on a cozy, plush cushion or nestled among other soft toys, creating a warm and inviting scene."
+  },
+  {
+    "id": 89,
+    "name": "hair drier",
+    "description": "The hair drier is a compact, cylindrical device with a wide, circular opening at one end, often featuring a series of slots or nozzles. Its body is typically bright orange or red, with a smooth, plastic finish that can have a slight glossiness. The handle is slightly curved and ergonomically designed, allowing for comfortable grip during use. Usually seen in bathrooms or near sinks, it often rests upright on a countertop or hangs from a hook, surrounded by towels and other grooming supplies."
+  },
+  {
+    "id": 90,
+    "name": "toothbrush",
+    "description": "The toothbrush in the photograph is a small, cylindrical object with a handle that tapers towards the grip area, often made from a smooth, plastic material in a bright white or pastel shade. The head of the toothbrush features a cluster of soft, bristly tufts, typically in rows of varying lengths, giving it a slightly fuzzy appearance against the smooth handle. The bristles themselves are a contrasting black or dark blue, adding a stark contrast to the predominantly white or pastel handle. Usually seen on a bathroom countertop near a sink, the toothbrush might also be accompanied by a travel case or a bottle of toothpaste, reflecting its common use in personal hygiene routines."
+  }
+]
