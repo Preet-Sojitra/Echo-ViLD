@@ -96,7 +96,15 @@ def get_article(category_name):
 def extract_text_embedding(text_list):
     """Passes a list of strings through PE-AV and returns L2-normalized embeddings."""
 
-    inputs = processor(text=text_list, return_tensors="pt", padding=True).to(device)
+    # create a "fake" video (1 frame of black pixels) 
+    # shape required by HF: [batch_size, num_frames, channels, height, width]
+    batch_size = len(text_list)
+    dummy_video = torch.zeros((batch_size, 1, 3, 224, 224))
+    
+    # pass both the real text and the dummy video into the processor
+    dummy_video_list = list(dummy_video)
+
+    inputs = processor(text=text_list, videos=dummy_video_list, return_tensors="pt", padding=True).to(device)
     
     with torch.inference_mode(), torch.autocast(device.type, dtype=torch.bfloat16):
         outputs = model(**inputs)
@@ -114,7 +122,7 @@ llm_final_embeds = []
 
 print("Generating Embeddings for 80 COCO Classes...")
 
-DEBUG = True
+DEBUG = False
 
 if DEBUG:
     coco_classes = coco_classes[:1]
