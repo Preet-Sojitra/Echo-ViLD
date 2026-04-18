@@ -1,3 +1,6 @@
 *.zip
 *.pth
 *.pt
+.env
+logs
+__pycache__
