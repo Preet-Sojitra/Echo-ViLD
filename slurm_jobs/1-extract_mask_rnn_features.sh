@@ -1,6 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=extract_maskrnn_features
-#SBATCH --partition=normal
+#SBATCH --partition=a30_4.6gb
+#SBATCH --gres=nvidia_a30_1g.6gb:1
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1     
@@ -8,8 +9,6 @@
 #SBATCH --time=8:00:00
 #SBATCH --output=logs/mask_rnn_features/job_%j/slurm_main.out
 #SBATCH --error=logs/mask_rnn_features/job_%j/slurm_main.err
-#SBATCH --mail-type=END,FAIL      # Send email on job end or failure
-#SBATCH --mail-user=dal696598@utdallas.edu
 
 # ================= CONFIGURATION =================
 
@@ -43,9 +42,9 @@ python $PROJECT_DIR/offline_prep/extract_maskrnn_features.py \
     --ann_file "$ANNOTATION_FILE" \
     --output_dir "$SCRATCH_OUTPUT_DIR" \
     --max_proposals 300 \
-    --max_images 10
+    --max_images -1
 
 echo "Syncing logs..."
-rsync -avz "$SCRATCH_LOGS/" "$FINAL_LOGS_BASE/"
+# rsync -avz "$SCRATCH_LOGS/" "$FINAL_LOGS_BASE/"
 
 echo "Job Done!"

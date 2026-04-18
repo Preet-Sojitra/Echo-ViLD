@@ -162,8 +162,8 @@ def main(args):
 
     # upload to HuggingFace
     api = HfApi()
-    api.upload_file(
-        path_or_fileobj=args.output_dir,
+    api.upload_folder(
+        folder_path=args.output_dir,
         path_in_repo='Bboxes_and_256D',
         repo_id='preetsojitra/Echo-VilD',
         repo_type="dataset",
@@ -184,4 +184,5 @@ if __name__ == '__main__':
     parser.add_argument('--max_images',    type=int, default=5000,
                         help='Max images to process (-1 = all)')
     args = parser.parse_args()
+
     main(args)
