@@ -1,271 +1,46 @@
-"""
-Loads M1's .pt files, runs SAM/PE-AV, saves target .pt files.
-
-Things to do:
-1. Take bboxes from M1 -> crop the image using bboxes
- -> pass to peav -> will be our vanilla PEAV embeddings. Our baseline.
-2. Take bboxes -> crop -> apply SAM segmentation -> get mask -> blackout background -> pass to peav -> will be our sam_no_context embeddings.
-3. Take bboxes -> crop -> apply SAM segmentation -> get mask -> blackout background -> pass to peav -> all pass full image to peav -> average the embeddings -> sam_with_context_equal
-4. same as 3 but averaging with 80 20 ratio -> sam_with_context_80_20 embedding
-
-Code runs with the assumption that it is being run in google colab where Bboxes_and_256D and train2017 are directories in the Phase 1 directory in  google drive 
-"""
-
-
-from pathlib import Path
-import random
+import argparse
+import os
 import time
+from pathlib import Path
 
 import cv2
 import numpy as np
 import torch
-from segment_anything import sam_model_registry, SamPredictor
-from transformers import PeAudioVideoModel, PeAudioVideoProcessor
-
-#project_root / "SAM and PEAV" / t.py
-# SCRIPT_DIR = Path(__file__).resolve().parent
-
-#SAM and PEAV = project root
-PROJECT_ROOT = Path("/content/drive/MyDrive/Phase 1")
-
-#results  
-INPUT_PT_DIR = PROJECT_ROOT / "Bboxes_and_256D"
-
-#images path 
-IMAGES_DIR = PROJECT_ROOT / "train2017"
-
-#PEAV path 
-# PEAV_MODEL_PATH = Path("/content/pe-av-small-16-frame")
-PEAV_MODEL_ID = "facebook/pe-av-small-16-frame"
-
-#output folder for embedding 
-##outputing inside colab for storage saving 
-OUTPUT_DIR = Path("/content/sam_peav_outputs")
-
-#debug folder 
-DEBUG_MASK_DIR = OUTPUT_DIR / "debug_masked_crops"
-DEBUG_BINARY_MASK_DIR = OUTPUT_DIR / "debug_binary_masks"
-DEBUG_OVERLAY_DIR = OUTPUT_DIR / "debug_overlays"
-DEBUG_GRID_DIR = OUTPUT_DIR / "debug_inspection_grids"
-
-#SAM checkpoint path 
-SAM_CHECKPOINT = Path("/content/sam_vit_l_0b3195.pth")
-
-#saver for mask cropping dubugging
-SAVE_DEBUG_MASKS = True
-DEBUG_MAX_DETECTIONS_PER_IMAGE = 8
-DEBUG_SAMPLE_SEED = 7
-
-#detecgtion = skip those are that below 0
-MIN_PRED_SCORE = 0.0
-
-
-#use CPU if no GPU. I have NVIDIA GPU so I used this 
-DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-
-
-#load peav once 
-def load_peav():
-    model = PeAudioVideoModel.from_pretrained(
-        PEAV_MODEL_ID,
-        low_cpu_mem_usage=True
-    ).to(DEVICE)
-
-    processor = PeAudioVideoProcessor.from_pretrained(str(PEAV_MODEL_ID))
-
-    #olny doing interference 
-    model.eval()
-
-    return model, processor
-
-
-#load sam model
-def load_sam():
-    if not SAM_CHECKPOINT.exists():
-        raise FileNotFoundError(f"SAM checkpoint not found: {SAM_CHECKPOINT}")
-
-    sam = sam_model_registry["vit_l"](checkpoint=str(SAM_CHECKPOINT)).to(DEVICE)
-    predictor = SamPredictor(sam)
-
-    return predictor
-
-
-
-#helper functions 
-
-def l2_normalize(vec: np.ndarray, eps: float = 1e-12) -> np.ndarray:
-    #normalize vector to unit length for stable comparison 
-    return vec / (np.linalg.norm(vec) + eps)
-
-
-def image_id_to_filename(image_id: str) -> str:
-    #change coco image to it's corresponding jpg name 
-    return f"{int(image_id):012d}.jpg"
-
-
-def clamp_box_xyxy(box, width: int, height: int):
-    #clap coordinates bwfore cropping  
-    x1, y1, x2, y2 = box
-    x1 = int(max(0, min(round(float(x1)), width - 1)))
-    y1 = int(max(0, min(round(float(y1)), height - 1)))
-    x2 = int(max(x1 + 1, min(round(float(x2)), width)))
-    y2 = int(max(y1 + 1, min(round(float(y2)), height)))
-    return x1, y1, x2, y2
-
-
-def crop_from_box(image_bgr: np.ndarray, box_xyxy):
-    #crop an image
-    h, w = image_bgr.shape[:2]
-    x1, y1, x2, y2 = clamp_box_xyxy(box_xyxy, w, h)
-    crop = image_bgr[y1:y2, x1:x2]
-    return crop, (x1, y1, x2, y2)
-
-
-def get_text_prompt(det_label) -> str:
-    #get text from peav
-    if isinstance(det_label, bytes):
-        det_label = det_label.decode("utf-8", errors="ignore")
-    if isinstance(det_label, str):
-        det_label = det_label.strip()
-        return det_label if det_label else "object"
-    if isinstance(det_label, torch.Tensor):
-        if det_label.numel() == 1:
-            det_label = det_label.item()
-    if isinstance(det_label, (int, np.integer)):
-        return f"object_{int(det_label)}"
-    if isinstance(det_label, (float, np.floating)):
-        return f"object_{int(det_label)}"
-    return "object"
-
-
-def tensor_to_numpy(x):
-    if isinstance(x, torch.Tensor):
-        return x.detach().cpu().numpy()
-    return np.asarray(x)
-
-
-def get_video_embed_from_image(
-    model,
-    processor,
-    image_bgr: np.ndarray,
-    text_prompt: str
-) -> np.ndarray:
-    """
-        Compute the Transformers PE-AV visual embedding.
-            by creating a fake 16-frame video: it basically repeats the same image 16 times.
-    """
-    #OpenCV color converter 
-    image_rgb = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)
-
-    #creating a fake 16-frame video: it basically repeats the same image 16 times.
-    fake_video = [image_rgb for _ in range(16)]
-
-    #using videos 
-    inputs = processor(
-        videos=[fake_video],
-        text=[text_prompt],
-        return_tensors="pt",
-        padding=True
-    )
-
-    #mvoe rensor to device 
-    inputs = {k: v.to(DEVICE) for k, v in inputs.items()}
-
-    #run in inference mode
-    with torch.inference_mode():
-        outputs = model(**inputs)
-
-    #pull out the visual embedding
-    emb = outputs.video_embeds[0].float().detach().cpu().numpy()
-
-    return l2_normalize(emb)
-
-
-def get_sam_mask_on_crop(
-    sam_predictor: SamPredictor,
-    crop_bgr: np.ndarray
-):
-    #run SAM 
-    crop_rgb = cv2.cvtColor(crop_bgr, cv2.COLOR_BGR2RGB)
-    sam_predictor.set_image(crop_rgb)
-
-    h, w = crop_bgr.shape[:2]
-
-    #SAM is run with full crop 
-    input_box = np.array([0, 0, w - 1, h - 1], dtype=np.float32)
-
-    masks, scores, _ = sam_predictor.predict(
-        box=input_box,
-        multimask_output=True
-    )
-
-    best_idx = int(np.argmax(scores))
-    return masks[best_idx].astype(bool), float(scores[best_idx])
-
-
-def blackout_background(
-    crop_bgr: np.ndarray,
-    crop_mask: np.ndarray,
-    blackout_value: int = 0
-) -> np.ndarray:
-    #blackout background
-    masked = crop_bgr.copy()
-    masked[~crop_mask] = blackout_value
-    return masked
-
-
-def make_binary_mask_image(crop_mask: np.ndarray) -> np.ndarray:
-    return (crop_mask.astype(np.uint8) * 255)
-
-
-def make_overlay(crop_bgr: np.ndarray, crop_mask: np.ndarray) -> np.ndarray:
-    overlay = crop_bgr.copy()
-    green = np.zeros_like(crop_bgr)
-    green[:, :, 1] = 255
-    alpha = 0.35
-    overlay[crop_mask] = cv2.addWeighted(crop_bgr[crop_mask], 1 - alpha, green[crop_mask], alpha, 0)
-    return overlay
-
-
-def make_inspection_grid(original_crop: np.ndarray, binary_mask: np.ndarray, masked_crop: np.ndarray, overlay: np.ndarray) -> np.ndarray:
-    if binary_mask.ndim == 2:
-        binary_mask = cv2.cvtColor(binary_mask, cv2.COLOR_GRAY2BGR)
-
-    h = max(original_crop.shape[0], binary_mask.shape[0], masked_crop.shape[0], overlay.shape[0])
-
-    def fit(img):
-        if img.shape[0] == h:
-            return img
-        scale = h / img.shape[0]
-        w = max(1, int(round(img.shape[1] * scale)))
-        return cv2.resize(img, (w, h), interpolation=cv2.INTER_NEAREST)
-
-    panels = [fit(original_crop), fit(binary_mask), fit(masked_crop), fit(overlay)]
-    return np.concatenate(panels, axis=1)
-
-
-def pick_debug_indices(num_items: int, max_items: int):
-    if num_items <= max_items:
-        return set(range(num_items))
-    rng = random.Random(DEBUG_SAMPLE_SEED)
-    return set(rng.sample(range(num_items), k=max_items))
-
-
-def load_detection_pt(pt_path: Path):
-    return torch.load(pt_path, map_location="cpu")
-
+from huggingface_hub import snapshot_download
+from dotenv import load_dotenv
+
+from utils.sam_peav_utils import (
+    load_peav,
+    load_sam,
+    image_id_to_filename,
+    crop_from_box,
+    get_text_prompt,
+    tensor_to_numpy,
+    get_video_embed_from_image,
+    get_sam_mask_on_crop,
+    blackout_background,
+    l2_normalize,
+    pick_debug_indices,
+    make_binary_mask_image,
+    make_overlay,
+    make_inspection_grid,
+    load_detection_pt
+)
+
+load_dotenv()
 
 def process_single_image(
     image_id: str,
     detections: dict,
     peav_model,
     peav_processor,
-    sam_predictor
+    sam_predictor,
+    images_dir: Path,
+    device: torch.device,
+    debug_config: dict
 ):
     """
-    for each image 
-        do the crop,peave,same, ... 
+    For each image: do the crop, peav, sam, etc.
     """
     file_name = detections.get("file_name")
     boxes = tensor_to_numpy(detections.get("boxes", []))
@@ -273,22 +48,22 @@ def process_single_image(
     labels = detections.get("labels", None)
 
     if labels is None:
+        print(f"[Warning] No labels found for image: {image_id}")
         labels = ["object"] * len(boxes)
     elif isinstance(labels, torch.Tensor):
         labels = labels.detach().cpu().numpy()
 
-    #Image ID --> coco filename 
     image_filename = str(file_name) if file_name else image_id_to_filename(image_id)
-    image_path = IMAGES_DIR / image_filename
+    image_path = images_dir / image_filename
 
-    #file != exists = skip
     if not image_path.exists():
-        return
+        print(f"[Warning] Image not found: {image_path}")
+        return None
 
-    #load the full image
     full_bgr = cv2.imread(str(image_path))
     if full_bgr is None:
-        return
+        print(f"[Warning] Failed to read image: {image_path}")
+        return None
 
     full_text_prompt = get_text_prompt(labels[0]) if len(labels) > 0 else "object"
 
@@ -297,51 +72,44 @@ def process_single_image(
         peav_model,
         peav_processor,
         full_bgr,
-        full_text_prompt
+        full_text_prompt,
+        device
     )
     print(f"{image_id} full_image_peav {time.perf_counter() - t0:.4f}s")
 
-    #lits for embeddings 
     baseline_embeds = []
     sam_nocontext_embeds = []
     sam_withcontext_equal_embeds = []
     sam_withcontext_80_20_embeds = []
-
-    #for row mapping and debugging
     metadata = []
 
-    debug_indices = pick_debug_indices(len(boxes), DEBUG_MAX_DETECTIONS_PER_IMAGE)
+    debug_indices = set()
+    if debug_config["enabled"]:
+        debug_indices = pick_debug_indices(len(boxes), debug_config["max_detections"])
 
-    #loop
     for det_idx, pred_box in enumerate(boxes):
         pred_class = labels[det_idx] if det_idx < len(labels) else "object"
         pred_score = float(scores[det_idx]) if det_idx < len(scores) else 0.0
 
-        #skip low or invalid scores 
-        if pred_box is None or pred_score < MIN_PRED_SCORE:
+        if pred_box is None or pred_score < debug_config["min_pred_score"]:
             continue
 
-        #choose text prompt 
         text_prompt = get_text_prompt(pred_class)
-
-        #crop only once 
         crop_bgr, fixed_box = crop_from_box(full_bgr, pred_box)
 
-        #if empty crop = skip 
         if crop_bgr.size == 0:
             continue
 
-        # Have bboxes (300,4) -> crop rectangular boxes -> peav 
         t0 = time.perf_counter()
         baseline_emb = get_video_embed_from_image(
             peav_model,
             peav_processor,
             crop_bgr,
-            text_prompt
+            text_prompt,
+            device
         )
         print(f"{image_id} det_{det_idx} baseline_peav {time.perf_counter() - t0:.4f}s")
 
-        #Have bboxes -> crop -> apply SAM -> blackout bg -> peav -> save -> will be our sam_nocontext embeddings
         t0 = time.perf_counter()
         crop_mask, sam_score = get_sam_mask_on_crop(sam_predictor, crop_bgr)
         masked_crop_bgr = blackout_background(crop_bgr, crop_mask, blackout_value=0)
@@ -352,26 +120,23 @@ def process_single_image(
             peav_model,
             peav_processor,
             masked_crop_bgr,
-            text_prompt
+            text_prompt,
+            device
         )
         print(f"{image_id} det_{det_idx} masked_peav {time.perf_counter() - t0:.4f}s")
 
-        #Have bboxes -> crop -> SAM -> blackout bg -> peav -> average with full img ->  will be our sam_withcontext embeddings + weights 
         sam_withcontext_equal = l2_normalize(
             0.5 * sam_nocontext_emb + 0.5 * full_img_embed
         )
-
         sam_withcontext_80_20 = l2_normalize(
             0.8 * sam_nocontext_emb + 0.2 * full_img_embed
         )
 
-        #store results 
         baseline_embeds.append(baseline_emb)
         sam_nocontext_embeds.append(sam_nocontext_emb)
         sam_withcontext_equal_embeds.append(sam_withcontext_equal)
         sam_withcontext_80_20_embeds.append(sam_withcontext_80_20)
 
-        #save data for the detections 
         row = {
             "det_idx": det_idx,
             "pred_class": text_prompt,
@@ -383,14 +148,13 @@ def process_single_image(
             "mask_area_ratio": float(crop_mask.mean()) if crop_mask.size > 0 else 0.0,
         }
 
-        #saving mask for debugging 
-        if SAVE_DEBUG_MASKS and det_idx in debug_indices:
+        if debug_config["enabled"] and det_idx in debug_indices:
             base_name = f"{image_id}_{det_idx:04d}"
-
-            masked_path = DEBUG_MASK_DIR / f"{base_name}_masked.png"
-            binary_mask_path = DEBUG_BINARY_MASK_DIR / f"{base_name}_mask.png"
-            overlay_path = DEBUG_OVERLAY_DIR / f"{base_name}_overlay.png"
-            grid_path = DEBUG_GRID_DIR / f"{base_name}_grid.png"
+            
+            masked_path = debug_config["mask_dir"] / f"{base_name}_masked.png"
+            binary_mask_path = debug_config["binary_mask_dir"] / f"{base_name}_mask.png"
+            overlay_path = debug_config["overlay_dir"] / f"{base_name}_overlay.png"
+            grid_path = debug_config["grid_dir"] / f"{base_name}_grid.png"
 
             binary_mask = make_binary_mask_image(crop_mask)
             overlay = make_overlay(crop_bgr, crop_mask)
@@ -408,62 +172,97 @@ def process_single_image(
 
         metadata.append(row)
 
-    #no valid detections = stop 
     if len(baseline_embeds) == 0:
-        return
+        return None
 
-    #convering embedded list to NumPy arrays
-    baseline_embeds = np.stack(baseline_embeds, axis=0)
-    sam_nocontext_embeds = np.stack(sam_nocontext_embeds, axis=0)
-    sam_withcontext_equal_embeds = np.stack(sam_withcontext_equal_embeds, axis=0)
-    sam_withcontext_80_20_embeds = np.stack(sam_withcontext_80_20_embeds, axis=0)
-
-    #save embeddings 
     return {
-        "baseline": torch.from_numpy(baseline_embeds).float(),
-        "sam_nocontext": torch.from_numpy(sam_nocontext_embeds).float(),
-        "sam_withcontext_equal": torch.from_numpy(sam_withcontext_equal_embeds).float(),
-        "sam_withcontext_80_20": torch.from_numpy(sam_withcontext_80_20_embeds).float(),
+        "baseline": torch.from_numpy(np.stack(baseline_embeds, axis=0)).float(),
+        "sam_nocontext": torch.from_numpy(np.stack(sam_nocontext_embeds, axis=0)).float(),
+        "sam_withcontext_equal": torch.from_numpy(np.stack(sam_withcontext_equal_embeds, axis=0)).float(),
+        "sam_withcontext_80_20": torch.from_numpy(np.stack(sam_withcontext_80_20_embeds, axis=0)).float(),
         "metadata": metadata,
     }
 
-
-
+def parse_args():
+    parser = argparse.ArgumentParser(description="Generate SAM and PEAV targets from bounded boxes.")
+    parser.add_argument("--images_dir", required=True, help="Path to the COCO images directory (e.g. train2017)")
+    parser.add_argument("--sam-checkpoint", required=True, help="Path to the SAM checkpoint file")
+    parser.add_argument("--output_dir", default="./sam_peav_outputs", help="Output directory to save target PT files")
+    parser.add_argument("--min_pred_score", type=float, default=0.0, help="Minimum prediction score for crops")
+    parser.add_argument("--debug", action="store_true", help="Run in debug mode (limits samples and saves inspection grids)")
+    parser.add_argument("--debug_samples", type=int, default=5, help="Number of files to process when in debug mode")
+    parser.add_argument("--debug_max_detections", type=int, default=4, help="Max detections per image to visualize in debug mode")
+    
+    args = parser.parse_args()
+    
+    return args
 
 def main():
 
-    all_baseline = OUTPUT_DIR / "all_baseline"
-    all_sam_nocontext = OUTPUT_DIR / "all_sam_nocontext"
-    all_sam_withcontext_equal = OUTPUT_DIR / "all_sam_withcontext_equal"
-    all_sam_withcontext_80_20 = OUTPUT_DIR / "all_sam_withcontext_80_20"
-    all_metadata = OUTPUT_DIR / "all_metadata"
+    HF_INPUT_REPO = "preetsojitra/Echo-VilD"
+    HF_INPUT_FOLDER = "Bboxes_and_256D"
 
-    #output folder creation 
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    PEAV_MODEL_ID = "facebook/pe-av-small-16-frame"
+    SAM_CHECKPOINT = args.sam_checkpoint
+    
+    args = parse_args()
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"Using device: {device}")
 
-    all_baseline.mkdir(parents=True, exist_ok=True)
-    all_sam_nocontext.mkdir(parents=True, exist_ok=True)
-    all_sam_withcontext_equal.mkdir(parents=True, exist_ok=True)
-    all_sam_withcontext_80_20.mkdir(parents=True, exist_ok=True)
-    all_metadata.mkdir(parents=True, exist_ok=True)
+    # HF Dataset Download
+    print(f"Downloading/Using dataset from {HF_INPUT_REPO}/{HF_INPUT_FOLDER}...")
+    local_dir = snapshot_download(
+        repo_id=HF_INPUT_REPO, 
+        repo_type="dataset", 
+        allow_patterns=f"{HF_INPUT_FOLDER}/*",
+        token=os.getenv("HF_TOKEN")
+    )
+    input_pt_dir = Path(local_dir) / HF_INPUT_FOLDER
+    
+    images_dir = Path(args.images_dir)
+    output_dir = Path(args.output_dir)
 
-    if SAVE_DEBUG_MASKS:
-        DEBUG_MASK_DIR.mkdir(parents=True, exist_ok=True)
-        DEBUG_BINARY_MASK_DIR.mkdir(parents=True, exist_ok=True)
-        DEBUG_OVERLAY_DIR.mkdir(parents=True, exist_ok=True)
-        DEBUG_GRID_DIR.mkdir(parents=True, exist_ok=True)
+    all_baseline = output_dir / "all_baseline"
+    all_sam_nocontext = output_dir / "all_sam_nocontext"
+    all_sam_withcontext_equal = output_dir / "all_sam_withcontext_equal"
+    all_sam_withcontext_80_20 = output_dir / "all_sam_withcontext_80_20"
+    all_metadata = output_dir / "all_metadata"
 
-    peav_model, peav_processor = load_peav()
-    sam_predictor = load_sam()
+    for d in [all_baseline, all_sam_nocontext, all_sam_withcontext_equal, all_sam_withcontext_80_20, all_metadata]:
+        d.mkdir(parents=True, exist_ok=True)
 
-    pt_files = sorted(INPUT_PT_DIR.glob("*.pt"))
+    debug_config = {
+        "enabled": args.debug,
+        "max_detections": args.debug_max_detections,
+        "min_pred_score": args.min_pred_score,
+    }
+
+    if args.debug:
+        debug_config["mask_dir"] = output_dir / "debug_masked_crops"
+        debug_config["binary_mask_dir"] = output_dir / "debug_binary_masks"
+        debug_config["overlay_dir"] = output_dir / "debug_overlays"
+        debug_config["grid_dir"] = output_dir / "debug_inspection_grids"
+        
+        for p in ["mask_dir", "binary_mask_dir", "overlay_dir", "grid_dir"]:
+            debug_config[p].mkdir(parents=True, exist_ok=True)
+
+    print("Loading models...")
+    peav_model, peav_processor = load_peav(PEAV_MODEL_ID, device)
+    sam_predictor = load_sam(SAM_CHECKPOINT, device)
+
+    pt_files = sorted(input_pt_dir.glob("*.pt"))
     if len(pt_files) == 0:
-        raise FileNotFoundError(f"No .pt files found in {INPUT_PT_DIR}")
+        raise FileNotFoundError(f"No .pt files found in {input_pt_dir}")
 
-    #load each image in json 
-    for pt_path in pt_files:
+    if args.debug:
+        print(f"Running in debug mode. Limiting processing to {args.debug_samples} files.")
+        pt_files = pt_files[:args.debug_samples]
+
+    print(f"Processing {len(pt_files)} extracted MaskRCNN feature files...")
+
+    for i, pt_path in enumerate(pt_files):
+        print(f"[{i+1}/{len(pt_files)}] Processing {pt_path.name}")
         detections = load_detection_pt(pt_path)
-
         image_id = detections.get("img_id", pt_path.stem)
 
         result = process_single_image(
@@ -471,20 +270,23 @@ def main():
             detections=detections,
             peav_model=peav_model,
             peav_processor=peav_processor,
-            sam_predictor=sam_predictor
+            sam_predictor=sam_predictor,
+            images_dir=images_dir,
+            device=device,
+            debug_config=debug_config
         )
 
         if result is None:
             continue
 
         image_id = str(image_id)
-
         torch.save(result["baseline"], all_baseline / f"{image_id}.pt")
         torch.save(result["sam_nocontext"], all_sam_nocontext / f"{image_id}.pt")
         torch.save(result["sam_withcontext_equal"], all_sam_withcontext_equal / f"{image_id}.pt")
         torch.save(result["sam_withcontext_80_20"], all_sam_withcontext_80_20 / f"{image_id}.pt")
         torch.save(result["metadata"], all_metadata / f"{image_id}.pt")
 
+    print(f"Finished processing! Outputs are available in: {output_dir}")
 
 if __name__ == "__main__":
     main()
