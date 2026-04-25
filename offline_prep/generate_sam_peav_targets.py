@@ -103,10 +103,6 @@ def process_single_image(
     
     bgr_crops = []
 
-    debug_indices = set()
-    if debug_config["enabled"]:
-        debug_indices = pick_debug_indices(len(boxes), debug_config["max_detections"])
-
     # 1. Collect all valid crops
     for det_idx, pred_box in enumerate(boxes):
         pred_class = labels[det_idx] if det_idx < len(labels) else "object"
@@ -130,6 +126,10 @@ def process_single_image(
 
     if len(bgr_crops) == 0:
         return None
+
+    debug_indices = set()
+    if debug_config["enabled"]:
+        debug_indices = pick_debug_indices(len(bgr_crops), debug_config["max_detections"])
 
     print(f"{image_id} collected {len(bgr_crops)} valid crops. Running batched inferences...")
 
@@ -191,7 +191,7 @@ def process_single_image(
             "mask_area_ratio": float(crop_mask.mean()) if crop_mask.size > 0 else 0.0,
         }
 
-        if debug_config["enabled"] and det_idx in debug_indices:
+        if debug_config["enabled"] and i in debug_indices:
             base_name = f"{image_id}_{det_idx:04d}"
             
             masked_path = debug_config["mask_dir"] / f"{base_name}_masked.png"
