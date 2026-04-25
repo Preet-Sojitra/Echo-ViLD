@@ -79,7 +79,8 @@ def get_video_embed_from_image(
         videos=[fake_video],
         text=[text_prompt],
         return_tensors="pt",
-        padding=True
+        padding=True,
+        input_data_format="channels_last"
     )
     inputs = {k: v.to(device) for k, v in inputs.items()}
 
@@ -151,3 +152,87 @@ def pick_debug_indices(num_items: int, max_items: int, seed: int = 7):
 
 def load_detection_pt(pt_path: Path):
     return torch.load(pt_path, map_location="cpu")
+
+def get_video_embed_batch_from_images(
+    model,
+    processor,
+    images_bgr: list,
+    text_prompts: list,
+    device,
+    batch_size: int = 16
+) -> np.ndarray:
+    all_embeds = []
+    
+    for i in range(0, len(images_bgr), batch_size):
+        batch_bgr = images_bgr[i:i+batch_size]
+        batch_texts = text_prompts[i:i+batch_size]
+
+        batch_videos = []
+        for img_bgr in batch_bgr:
+            img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
+            batch_videos.append([img_rgb for _ in range(16)])
+
+        inputs = processor(
+            videos=batch_videos,
+            text=batch_texts,
+            return_tensors="pt",
+            padding=True,
+            input_data_format="channels_last"
+        )
+        inputs = {k: v.to(device) for k, v in inputs.items()}
+
+        with torch.inference_mode():
+            outputs = model(**inputs)
+
+        batch_embs = outputs.video_embeds.float().detach().cpu().numpy()
+        for emb in batch_embs:
+            all_embeds.append(l2_normalize(emb))
+            
+    if len(all_embeds) == 0:
+        return np.array([])
+    return np.stack(all_embeds, axis=0)
+
+def get_sam_masks_batched(
+    sam_model,
+    bgr_crops: list,
+    device,
+    batch_size: int = 8
+):
+    from segment_anything.utils.transforms import ResizeLongestSide
+    transform = ResizeLongestSide(sam_model.image_encoder.img_size)
+    all_masks = []
+    all_scores = []
+    
+    for i in range(0, len(bgr_crops), batch_size):
+        batch_crops = bgr_crops[i:i+batch_size]
+        batched_inputs = []
+        
+        for crop in batch_crops:
+            crop_rgb = cv2.cvtColor(crop, cv2.COLOR_BGR2RGB)
+            orig_h, orig_w = crop_rgb.shape[:2]
+            
+            input_image = transform.apply_image(crop_rgb)
+            img_tensor = torch.as_tensor(input_image, device=device).permute(2, 0, 1).contiguous()
+            
+            box = np.array([[0, 0, orig_w - 1, orig_h - 1]])
+            box_tensor = torch.as_tensor(transform.apply_boxes(box, (orig_h, orig_w)), device=device)
+            
+            batched_inputs.append({
+                "image": sam_model.preprocess(img_tensor),
+                "boxes": box_tensor,
+                "original_size": (orig_h, orig_w)
+            })
+            
+        with torch.inference_mode():
+            batched_outputs = sam_model(batched_inputs, multimask_output=True)
+            
+        for out in batched_outputs:
+            masks = out["masks"] # (1, 3, H, W)
+            scores = out["iou_predictions"] # (1, 3)
+            best_idx = int(torch.argmax(scores[0]))
+            curr_mask = masks[0, best_idx].detach().cpu().numpy()
+            curr_score = float(scores[0, best_idx])
+            all_masks.append(curr_mask)
+            all_scores.append(curr_score)
+            
+    return all_masks, all_scores
