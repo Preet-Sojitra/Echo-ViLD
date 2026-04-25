@@ -56,7 +56,7 @@ def assign_labels(pred_boxes, gt_boxes_coco, gt_cat_ids, iou_threshold=0.5):
 
     pred_boxes   : Tensor (N, 4)  [x1,y1,x2,y2]
     gt_boxes_coco: list of [x,y,w,h]
-    gt_cat_ids   : list of int
+    gt_cat_ids   : list of int (raw COCO category_ids, non-contiguous)
     """
     N = pred_boxes.shape[0]
     labels = torch.zeros(N, dtype=torch.long)
@@ -82,6 +82,13 @@ def assign_labels(pred_boxes, gt_boxes_coco, gt_cat_ids, iou_threshold=0.5):
         # else stays 0 (background)
 
     return labels
+
+
+def build_coco_id_remap(desc_path):
+    """Map raw COCO category_id -> compact class index (1..80); 0 stays background."""
+    with open(desc_path, 'r') as f:
+        classes = json.load(f)
+    return {c['id']: i + 1 for i, c in enumerate(classes)}
 
 @torch.no_grad()
 def extract_one_image(img_path, model, device, max_proposals=300):
@@ -114,6 +121,8 @@ def main(args):
     model = build_model(device)
     images, gt_annotations, class_map = load_coco_annotations(args.ann_file)
 
+    id_remap = build_coco_id_remap(args.class_desc)
+
     img_ids = list(images.keys())
     if args.max_images > 0:
         img_ids = img_ids[:args.max_images]
@@ -140,7 +149,7 @@ def main(args):
             # Assign GT labels via IoU matching
             ann_list   = gt_annotations[img_id]
             gt_bboxes  = [a['bbox'] for a in ann_list]
-            gt_cat_ids = [a['category_id'] for a in ann_list]
+            gt_cat_ids = [id_remap[a['category_id']] for a in ann_list]
             labels = assign_labels(boxes, gt_bboxes, gt_cat_ids, iou_threshold=0.5)
 
             torch.save({
@@ -183,6 +192,8 @@ if __name__ == '__main__':
                         help='Max region proposals per image')
     parser.add_argument('--max_images',    type=int, default=5000,
                         help='Max images to process (-1 = all)')
+    parser.add_argument('--class_desc',    default='offline_prep/coco_class_descriptions.json',
+                        help='JSON defining the 80-class ordering (maps raw COCO ids -> 1..80)')
     args = parser.parse_args()
 
     main(args)

@@ -1,0 +1,22 @@
+model_id: vanilla
+image_emb_variant: vanilla
+text_emb_variant: vild_text_embeddings_80
+ckpt_dir: weights/vanilla
+log_csv:  weights/vanilla/loss.csv
+
+roi_dim: 256
+hidden_dim: 512
+embed_dim: 1024
+num_classes: 80
+temperature: 0.01
+lambda_distill: 0.5
+
+optimizer: adamw
+lr: 1.0e-4
+weight_decay: 1.0e-4
+batch_size: 4
+epochs: 10
+warmup_steps: 500
+scheduler: cosine
+amp: fp16
+seed: 42
