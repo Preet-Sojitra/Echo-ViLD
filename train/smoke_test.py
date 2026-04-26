@@ -1,4 +1,5 @@
 """Smoke test — validates the full pipeline on random tensors. No data download required."""
+
 import sys
 from pathlib import Path
 
@@ -45,26 +46,43 @@ def run_smoke_test(steps: int = 10, batch_size: int = 2):
     params    = list(proj_head.parameters()) + [cls_head.bg_embed]
     optimizer = torch.optim.AdamW(params, lr=1e-4)
 
+    prev_loss = None
     for step in range(steps):
         roi_feat    = torch.randn(batch_size, 300, 256, device=device)
         labels      = torch.randint(0, 81, (batch_size, 300), device=device)
         teacher_emb = torch.randn(batch_size, 300, 1024, device=device)
 
+        # Simulate realistic valid_mask: ~30% of proposals have teacher embeddings
+        valid_mask  = torch.rand(batch_size, 300, device=device) < 0.3
+
         optimizer.zero_grad()
-        proj_feat   = proj_head(roi_feat)
-        logits      = cls_head(proj_feat)
-        total_loss, cls_loss, distill_loss = splitting_loss(proj_feat, teacher_emb, logits, labels)
+        proj_feat_out = proj_head(roi_feat)
+        logits        = cls_head(proj_feat_out)
+        total_loss, cls_loss, distill_loss = splitting_loss(
+            proj_feat_out, teacher_emb, logits, labels, valid_mask=valid_mask,
+        )
         total_loss.backward()
         optimizer.step()
 
         print(f"  step {step+1:2d}: loss={total_loss.item():.4f}  "
               f"cls={cls_loss.item():.4f}  distill={distill_loss.item():.4f}")
+        prev_loss = total_loss.item()
 
     # Shape assertions
-    assert proj_feat.shape == (batch_size, 300, 1024), f"proj_feat shape wrong: {proj_feat.shape}"
+    assert proj_feat_out.shape == (batch_size, 300, 1024), f"proj_feat shape wrong: {proj_feat_out.shape}"
     assert logits.shape    == (batch_size, 300, 81),   f"logits shape wrong: {logits.shape}"
     assert cls_head.bg_embed.requires_grad
     assert not cls_head.text_emb.requires_grad
+
+    # Test edge case: all-False valid_mask (no valid proposals)
+    empty_mask = torch.zeros(batch_size, 300, dtype=torch.bool, device=device)
+    proj_feat_out = proj_head(roi_feat)
+    logits = cls_head(proj_feat_out)
+    total_loss, cls_loss, distill_loss = splitting_loss(
+        proj_feat_out, teacher_emb, logits, labels, valid_mask=empty_mask,
+    )
+    assert distill_loss.item() == 0.0, "distill_loss should be 0 with empty mask"
+    print(f"\n  Edge case (empty mask): distill_loss={distill_loss.item():.4f} ✓")
 
     print("\nAll shape assertions passed.")
     print("Smoke test PASSED.")

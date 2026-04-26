@@ -16,8 +16,7 @@ from torch.amp import GradScaler, autocast
 import yaml
 from dotenv import load_dotenv
 
-# Load .env from repo root (one level above train/)
-load_dotenv(Path(__file__).parent.parent / ".env")
+load_dotenv()
 
 # Add repo root to sys.path so absolute imports (datasets.*, models.*, train.*) resolve
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -42,6 +41,32 @@ def cosine_schedule_with_warmup(optimizer, warmup_steps: int, total_steps: int):
         progress = (current_step - warmup_steps) / max(1, total_steps - warmup_steps)
         return 0.5 * (1.0 + math.cos(math.pi * progress))
     return torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda)
+
+
+def upload_weights_to_hf(ckpt_dir: Path, model_id: str):
+    """Upload best.pth and last.pth to the HuggingFace dataset repo."""
+    from huggingface_hub import HfApi
+
+    api = HfApi()
+    repo_id = "preetsojitra/Echo-VilD"
+    token = os.environ.get("HF_TOKEN", None)
+
+    for name in ["best.pth", "last.pth"]:
+        local_path = ckpt_dir / name
+        if local_path.exists():
+            remote_path = f"weights/{model_id}/{name}"
+            print(f"Uploading {local_path} → {repo_id}/{remote_path}")
+            try:
+                api.upload_file(
+                    path_or_fileobj=str(local_path),
+                    path_in_repo=remote_path,
+                    repo_id=repo_id,
+                    repo_type="dataset",
+                    token=token,
+                )
+                print(f"  ✓ Uploaded {name}")
+            except Exception as e:
+                print(f"  ✗ Failed to upload {name}: {e}")
 
 
 def train(config: dict, mock_teacher: bool = False):
@@ -97,8 +122,7 @@ def train(config: dict, mock_teacher: bool = False):
         warmup_steps=config.get("warmup_steps", 500),
         total_steps=total_steps,
     )
-    # enabled=False makes GradScaler/autocast a no-op on CPU
-    scaler = GradScaler("cuda", enabled=use_amp)
+    scaler = GradScaler(device.type, enabled=use_amp)
 
     # --- Logging ---
     ckpt_dir = Path(config["ckpt_dir"])
@@ -120,17 +144,19 @@ def train(config: dict, mock_teacher: bool = False):
         train_cls_loss     = 0.0
         train_distill_loss = 0.0
 
-        for roi_feat, labels, teacher_emb in train_loader:
+        for roi_feat, labels, teacher_emb, valid_mask in train_loader:
             roi_feat    = roi_feat.to(device)
             labels      = labels.to(device)
             teacher_emb = teacher_emb.to(device)
+            valid_mask  = valid_mask.to(device)
 
             optimizer.zero_grad()
-            with autocast("cuda", enabled=use_amp):
-                proj_feat  = proj_head(roi_feat)
-                logits     = cls_head(proj_feat)
+            with autocast(device.type, enabled=use_amp):
+                proj_feat_out = proj_head(roi_feat)
+                logits        = cls_head(proj_feat_out)
                 total_loss, cls_loss, distill_loss = splitting_loss(
-                    proj_feat, teacher_emb, logits, labels, lambda_distill
+                    proj_feat_out, teacher_emb, logits, labels,
+                    lambda_distill, valid_mask,
                 )
 
             scaler.scale(total_loss).backward()
@@ -161,16 +187,18 @@ def train(config: dict, mock_teacher: bool = False):
         val_distill_loss = 0.0
 
         with torch.no_grad():
-            for roi_feat, labels, teacher_emb in val_loader:
+            for roi_feat, labels, teacher_emb, valid_mask in val_loader:
                 roi_feat    = roi_feat.to(device)
                 labels      = labels.to(device)
                 teacher_emb = teacher_emb.to(device)
+                valid_mask  = valid_mask.to(device)
 
-                with autocast("cuda", enabled=use_amp):
-                    proj_feat  = proj_head(roi_feat)
-                    logits     = cls_head(proj_feat)
+                with autocast(device.type, enabled=use_amp):
+                    proj_feat_out = proj_head(roi_feat)
+                    logits        = cls_head(proj_feat_out)
                     total_loss, cls_loss, distill_loss = splitting_loss(
-                        proj_feat, teacher_emb, logits, labels, lambda_distill
+                        proj_feat_out, teacher_emb, logits, labels,
+                        lambda_distill, valid_mask,
                     )
 
                 val_loss         += total_loss.item()
@@ -211,6 +239,10 @@ def train(config: dict, mock_teacher: bool = False):
 
     log_file.close()
     print(f"Done. Best checkpoint: {ckpt_dir / 'best.pth'}")
+
+    # --- Upload trained weights to HuggingFace ---
+    # model_id = config.get("model_id", Path(config["ckpt_dir"]).name)
+    # upload_weights_to_hf(ckpt_dir, model_id)
 
 
 if __name__ == "__main__":
