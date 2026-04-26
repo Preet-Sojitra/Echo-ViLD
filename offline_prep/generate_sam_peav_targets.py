@@ -6,7 +6,7 @@ from pathlib import Path
 import cv2
 import numpy as np
 import torch
-from huggingface_hub import snapshot_download
+from huggingface_hub import snapshot_download, HfApi
 from dotenv import load_dotenv
 
 from utils.sam_peav_utils import (
@@ -225,22 +225,23 @@ def process_single_image(
 
 
 def main():
+    args = parse_args()
 
-    HF_INPUT_REPO = "preetsojitra/Echo-VilD"
+    HF_REPO = "preetsojitra/Echo-VilD"
     HF_INPUT_FOLDER = "Bboxes_and_256D"
+    HF_OUTPUT_FOLDER = "Sam_Peav_Outputs"
 
     PEAV_MODEL_ID = "facebook/pe-av-small-16-frame"
     
-    args = parse_args()
     SAM_CHECKPOINT = args.sam_checkpoint
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
 
     # HF Dataset Download
-    print(f"Downloading/Using dataset from {HF_INPUT_REPO}/{HF_INPUT_FOLDER}...")
+    print(f"Downloading/Using dataset from {HF_REPO}/{HF_INPUT_FOLDER}...")
     local_dir = snapshot_download(
-        repo_id=HF_INPUT_REPO, 
+        repo_id=HF_REPO, 
         repo_type="dataset", 
         allow_patterns=f"{HF_INPUT_FOLDER}/*",
         token=os.getenv("HF_TOKEN")
@@ -250,10 +251,10 @@ def main():
     images_dir = Path(args.images_dir)
     output_dir = Path(args.output_dir)
 
-    all_baseline = output_dir / "all_baseline"
-    all_sam_nocontext = output_dir / "all_sam_nocontext"
-    all_sam_withcontext_equal = output_dir / "all_sam_withcontext_equal"
-    all_sam_withcontext_80_20 = output_dir / "all_sam_withcontext_80_20"
+    all_baseline = output_dir / "all_baseline" # this is peav on simple cropped images
+    all_sam_nocontext = output_dir / "all_sam_nocontext" # this is peav on cropped and then bg removed using sam
+    all_sam_withcontext_equal = output_dir / "all_sam_withcontext_equal" # this is peav on cropped and then bg removed using sam and then combined with full image using equal weights
+    all_sam_withcontext_80_20 = output_dir / "all_sam_withcontext_80_20" # this is peav on cropped and then bg removed using sam and then combined with full image using 80-20 weights
     all_metadata = output_dir / "all_metadata"
 
     for d in [all_baseline, all_sam_nocontext, all_sam_withcontext_equal, all_sam_withcontext_80_20, all_metadata]:
@@ -266,10 +267,10 @@ def main():
     }
 
     if args.debug:
-        debug_config["mask_dir"] = output_dir / "debug_masked_crops"
-        debug_config["binary_mask_dir"] = output_dir / "debug_binary_masks"
-        debug_config["overlay_dir"] = output_dir / "debug_overlays"
-        debug_config["grid_dir"] = output_dir / "debug_inspection_grids"
+        debug_config["mask_dir"] = output_dir / "debug_masked_crops" # this saves the masked crops. masked crops are the cropped images with background removed using sam
+        debug_config["binary_mask_dir"] = output_dir / "debug_binary_masks" # this saves the binary masks. binary masks are the masks of the foreground objects
+        debug_config["overlay_dir"] = output_dir / "debug_overlays" # this saves the overlay of the masked crops. overlay is the masked crop with the original crop
+        debug_config["grid_dir"] = output_dir / "debug_inspection_grids" # this saves the grid of the masked crops. grid is the overlay of the masked crops and the binary mask
         
         for p in ["mask_dir", "binary_mask_dir", "overlay_dir", "grid_dir"]:
             debug_config[p].mkdir(parents=True, exist_ok=True)
@@ -289,9 +290,23 @@ def main():
     print(f"Processing {len(pt_files)} extracted MaskRCNN feature files...")
 
     for i, pt_path in enumerate(pt_files):
-        print(f"\n[{i+1}/{len(pt_files)}] Processing {pt_path.name}")
         detections = load_detection_pt(pt_path)
-        image_id = detections.get("img_id", pt_path.stem)
+        image_id = str(detections.get("img_id", pt_path.stem))
+
+        # Strict Preemption Check (Ensures Job resumes correctly if killed)
+        expected_files = [
+            all_baseline / f"{image_id}.pt",
+            all_sam_nocontext / f"{image_id}.pt",
+            all_sam_withcontext_equal / f"{image_id}.pt",
+            all_sam_withcontext_80_20 / f"{image_id}.pt",
+            all_metadata / f"{image_id}.pt"
+        ]
+        
+        if all(p.exists() for p in expected_files):
+            print(f"\n[{i+1}/{len(pt_files)}] Skipping {pt_path.name} - Already fully processed.")
+            continue
+
+        print(f"\n[{i+1}/{len(pt_files)}] Processing {pt_path.name}")
 
         result = process_single_image(
             image_id=image_id,
@@ -309,14 +324,29 @@ def main():
         if result is None:
             continue
 
-        image_id = str(image_id)
         torch.save(result["baseline"], all_baseline / f"{image_id}.pt")
         torch.save(result["sam_nocontext"], all_sam_nocontext / f"{image_id}.pt")
         torch.save(result["sam_withcontext_equal"], all_sam_withcontext_equal / f"{image_id}.pt")
         torch.save(result["sam_withcontext_80_20"], all_sam_withcontext_80_20 / f"{image_id}.pt")
         torch.save(result["metadata"], all_metadata / f"{image_id}.pt")
 
-    print(f"\nFinished processing! Outputs are available in: {output_dir}")
+    print(f"\nFinished local processing! Outputs are available in: {output_dir}")
+
+    # Synchronize back to HuggingFace
+    if not args.debug:
+        print(f"Uploading output directory to Hugging Face: {HF_REPO}/{HF_OUTPUT_FOLDER}")
+        api = HfApi()
+        try:
+            api.upload_folder(
+                folder_path=str(output_dir),
+                path_in_repo=HF_OUTPUT_FOLDER,
+                repo_id=HF_REPO,
+                repo_type="dataset",
+                token=os.getenv("HF_TOKEN")
+            )
+            print("Successfully synced to Hugging Face!")
+        except Exception as e:
+            print(f"[ERROR] Failed to upload to Hugging Face: {e}")
 
 if __name__ == "__main__":
     main()
