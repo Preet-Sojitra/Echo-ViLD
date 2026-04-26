@@ -9,13 +9,15 @@
 #SBATCH --time=8:00:00
 #SBATCH --output=logs/sam_peav_targets/job_%j/slurm_main.out
 #SBATCH --error=logs/sam_peav_targets/job_%j/slurm_main.err
+#SBATCH --mail-type=END,FAIL      
+#SBATCH --mail-user=dal696598@utdallas.edu
 
 # ================= CONFIGURATION =================
 
 # 1. Project Paths (Source)
 RUN_ID="job_${SLURM_JOB_ID}"
 PROJECT_DIR="$HOME/work/Echo-ViLD"
-IMAGES_DIR="/home/dal696598/scratch/coco_subset_100/train2017"
+IMAGES_DIR="/home/dal696598/scratch/echo-vild/coco_subset_100/train2017"
 SAM_CHECKPOINT="/home/dal696598/scratch/echo-vild/sam_vit_l_0b3195.pth"
 FINAL_LOGS_BASE="$PROJECT_DIR/logs/sam_peav_targets/$RUN_ID"
 
@@ -42,9 +44,7 @@ python $PROJECT_DIR/offline_prep/generate_sam_peav_targets.py \
     --images_dir "$IMAGES_DIR" \
     --sam_checkpoint "$SAM_CHECKPOINT" \
     --output_dir "$SCRATCH_OUTPUT_DIR" \
-    --debug \
     --min_pred_score=0.3 \
-    --debug_samples=2 \
     --peav_batch_size=8 \
     --sam_batch_size=4
 
