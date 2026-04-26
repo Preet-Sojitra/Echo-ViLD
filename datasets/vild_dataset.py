@@ -1,11 +1,26 @@
 """
 PyTorch Dataset class that loads M1 & M2's .pt files
 """
+import json
 import torch
 from pathlib import Path
 from torch.utils.data import Dataset
 
 from datasets.hf_utils import download_100_bbox_256D, download_image_embeddings, IMAGE_EMB_VARIANTS
+
+# Raw COCO category_ids are non-contiguous (1..90 with gaps).  Build a lookup
+# tensor that maps raw_id -> compact class index (1..80), reserving 0 for background.
+_COCO_DESC_PATH = Path(__file__).parent.parent / "offline_prep" / "coco_class_descriptions.json"
+
+
+def _build_coco_label_lut() -> torch.Tensor:
+    with open(_COCO_DESC_PATH) as f:
+        classes = json.load(f)
+    max_raw_id = max(c["id"] for c in classes)
+    lut = torch.zeros(max_raw_id + 1, dtype=torch.long)
+    for i, c in enumerate(classes):
+        lut[c["id"]] = i + 1
+    return lut
 
 
 class EchoViLDDataset(Dataset):
@@ -32,6 +47,7 @@ class EchoViLDDataset(Dataset):
     ):
         self.mock_teacher = mock_teacher
         self.dtype = dtype
+        self._label_lut = _build_coco_label_lut()
 
         # Download bboxes + RoI features from HF
         bbox_feature_root = download_100_bbox_256D()
@@ -70,8 +86,9 @@ class EchoViLDDataset(Dataset):
         roi_data = torch.load(self.roi_features_dir / f"{image_id}.pt", map_location="cpu", weights_only=True)
         roi_feat = roi_data["roi_features"].to(self.dtype)  # (300, 256)
 
-        # Labels are already compact (0=bg, 1..80=COCO classes) from extract_maskrnn_features.py
-        labels = roi_data["labels"].long()  # (300,)
+        # Remap raw COCO category_ids (1..90 with gaps) → compact (0=bg, 1..80)
+        raw_labels = roi_data["labels"].long()
+        labels = self._label_lut[raw_labels]  # (300,)
 
         if self.mock_teacher:
             teacher_emb = torch.randn(self.NUM_PROPOSALS, self.EMBED_DIM, dtype=self.dtype)
