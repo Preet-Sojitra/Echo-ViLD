@@ -5,6 +5,12 @@ import torch
 from pathlib import Path
 from segment_anything import sam_model_registry, SamPredictor
 from transformers import PeAudioVideoModel, PeAudioVideoProcessor
+import transformers
+
+# Suppress "channel dimension is ambiguous" warning for very small crops (e.g. 4×4 px).
+# We already pass input_data_format="channels_last" but the internal rescale pipeline
+# still warns on tiny images.  The warning is harmless — PE-AV processes them correctly.
+transformers.logging.set_verbosity_error()
 
 def load_peav(model_id, device):
     model = PeAudioVideoModel.from_pretrained(

@@ -6,6 +6,7 @@ import csv
 import os
 import sys
 import math
+import warnings
 from pathlib import Path
 
 import torch
@@ -117,11 +118,15 @@ def train(config: dict, mock_teacher: bool = False):
     )
 
     total_steps = len(train_loader) * config.get("epochs", 10)
-    scheduler   = cosine_schedule_with_warmup(
-        optimizer,
-        warmup_steps=config.get("warmup_steps", 500),
-        total_steps=total_steps,
-    )
+    # Suppress harmless PyTorch warning: LambdaLR.__init__ internally calls
+    # step() before any optimizer.step(), triggering a false-positive.
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", UserWarning)
+        scheduler = cosine_schedule_with_warmup(
+            optimizer,
+            warmup_steps=config.get("warmup_steps", 500),
+            total_steps=total_steps,
+        )
     scaler = GradScaler(device.type, enabled=use_amp)
 
     # --- Logging ---
@@ -241,8 +246,8 @@ def train(config: dict, mock_teacher: bool = False):
     print(f"Done. Best checkpoint: {ckpt_dir / 'best.pth'}")
 
     # --- Upload trained weights to HuggingFace ---
-    # model_id = config.get("model_id", Path(config["ckpt_dir"]).name)
-    # upload_weights_to_hf(ckpt_dir, model_id)
+    model_id = config.get("model_id", Path(config["ckpt_dir"]).name)
+    upload_weights_to_hf(ckpt_dir, model_id)
 
 
 if __name__ == "__main__":
