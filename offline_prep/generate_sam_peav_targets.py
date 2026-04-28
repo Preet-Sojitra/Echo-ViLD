@@ -216,10 +216,10 @@ def process_single_image(
         metadata.append(row)
 
     return {
-        "baseline": torch.from_numpy(baseline_embeds).float(),
-        "sam_nocontext": torch.from_numpy(sam_nocontext_embeds).float(),
-        "sam_withcontext_equal": torch.from_numpy(np.stack(sam_withcontext_equal_embeds, axis=0)).float(),
-        "sam_withcontext_80_20": torch.from_numpy(np.stack(sam_withcontext_80_20_embeds, axis=0)).float(),
+        "baseline": torch.from_numpy(baseline_embeds).half(),
+        "sam_nocontext": torch.from_numpy(sam_nocontext_embeds).half(),
+        "sam_withcontext_equal": torch.from_numpy(np.stack(sam_withcontext_equal_embeds, axis=0)).half(),
+        "sam_withcontext_80_20": torch.from_numpy(np.stack(sam_withcontext_80_20_embeds, axis=0)).half(),
         "metadata": metadata,
     }
 
@@ -308,27 +308,31 @@ def main():
 
         print(f"\n[{i+1}/{len(pt_files)}] Processing {pt_path.name}")
 
-        result = process_single_image(
-            image_id=image_id,
-            detections=detections,
-            peav_model=peav_model,
-            peav_processor=peav_processor,
-            sam_predictor=sam_predictor,
-            images_dir=images_dir,
-            device=device,
-            debug_config=debug_config,
-            peav_batch_size=args.peav_batch_size,
-            sam_batch_size=args.sam_batch_size
-        )
+        try:    
+            result = process_single_image(
+                image_id=image_id,
+                detections=detections,
+                peav_model=peav_model,
+                peav_processor=peav_processor,
+                sam_predictor=sam_predictor,
+                images_dir=images_dir,
+                device=device,
+                debug_config=debug_config,
+                peav_batch_size=args.peav_batch_size,
+                sam_batch_size=args.sam_batch_size
+            )
 
-        if result is None:
+            if result is None:
+                continue
+
+            torch.save(result["baseline"], all_baseline / f"{image_id}.pt")
+            torch.save(result["sam_nocontext"], all_sam_nocontext / f"{image_id}.pt")
+            torch.save(result["sam_withcontext_equal"], all_sam_withcontext_equal / f"{image_id}.pt")
+            torch.save(result["sam_withcontext_80_20"], all_sam_withcontext_80_20 / f"{image_id}.pt")
+            torch.save(result["metadata"], all_metadata / f"{image_id}.pt")
+        except Exception as e:
+            print(f"\n[ERROR] Failed processing image: {image_id}: {e}")
             continue
-
-        torch.save(result["baseline"], all_baseline / f"{image_id}.pt")
-        torch.save(result["sam_nocontext"], all_sam_nocontext / f"{image_id}.pt")
-        torch.save(result["sam_withcontext_equal"], all_sam_withcontext_equal / f"{image_id}.pt")
-        torch.save(result["sam_withcontext_80_20"], all_sam_withcontext_80_20 / f"{image_id}.pt")
-        torch.save(result["metadata"], all_metadata / f"{image_id}.pt")
 
     print(f"\nFinished local processing! Outputs are available in: {output_dir}")
 
