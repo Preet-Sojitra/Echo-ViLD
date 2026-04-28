@@ -46,7 +46,7 @@ def load_coco_annotations(ann_file):
     # category_id -> name
     class_map = {cat['id']: cat['name'] for cat in coco['categories']}
 
-    return images, gt_annotations, class_map
+    return coco, images, gt_annotations, class_map
 
 
 def assign_labels(pred_boxes, gt_boxes_coco, gt_cat_ids, iou_threshold=0.5):
@@ -84,11 +84,12 @@ def assign_labels(pred_boxes, gt_boxes_coco, gt_cat_ids, iou_threshold=0.5):
     return labels
 
 
-def build_coco_id_remap(desc_path):
+def build_coco_id_remap(coco_data):
     """Map raw COCO category_id -> compact class index (1..80); 0 stays background."""
-    with open(desc_path, 'r') as f:
-        classes = json.load(f)
-    return {c['id']: i + 1 for i, c in enumerate(classes)}
+    # Extract the 80 active IDs and sort them
+    valid_ids = sorted([cat['id'] for cat in coco_data['categories']])
+    # Map them to 1 through 80 (0 is reserved for background)
+    return {raw_id: i + 1 for i, raw_id in enumerate(valid_ids)}
 
 @torch.no_grad()
 def extract_one_image(img_path, model, device, max_proposals=300):
@@ -109,7 +110,7 @@ def extract_one_image(img_path, model, device, max_proposals=300):
     box_features = model.roi_heads.box_roi_pool(features, [boxes], [img_tensor.shape[-2:]])
     
     # box_features shape is (N, 256, 7, 7). Average pool the 7x7 spatial dimensions:
-    roi_feats_256d = box_features.mean(dim=[2, 3])
+    roi_feats_256d = box_features.mean(dim=[2, 3]).half() # convert to fp16
 
     return boxes.cpu(), scores.cpu(), roi_feats_256d.cpu()
 
@@ -119,9 +120,9 @@ def main(args):
     print(f"Using device: {device}")
 
     model = build_model(device)
-    images, gt_annotations, class_map = load_coco_annotations(args.ann_file)
+    coco_data, images, gt_annotations, class_map = load_coco_annotations(args.ann_file)
 
-    id_remap = build_coco_id_remap(args.class_desc)
+    id_remap = build_coco_id_remap(coco_data)
 
     img_ids = list(images.keys())
     if args.max_images > 0:
@@ -158,7 +159,7 @@ def main(args):
                 'boxes'        : boxes,         # (N, 4)
                 'roi_scores'   : scores,        # (N,)
                 'roi_features' : roi_feats,     # (N, 256) <- student MLP input
-                'labels'       : labels,        # (N,)  0=bg, else COCO cat id
+                'labels'       : labels,        # (N,)  0=bg, 1..80 compact class index
             }, out_path)
 
         except Exception as e:
