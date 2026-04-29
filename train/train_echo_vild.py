@@ -23,8 +23,8 @@ load_dotenv()
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from datasets.vild_dataset import EchoViLDDataset
-from models.projection_head import ProjectionHead
-from models.classification_head import ClassificationHead
+from model.projection_head import ProjectionHead
+from model.classification_head import ClassificationHead
 from train.losses import splitting_loss
 
 

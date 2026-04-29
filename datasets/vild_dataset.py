@@ -47,7 +47,7 @@ class EchoViLDDataset(Dataset):
     ):
         self.mock_teacher = mock_teacher
         self.dtype = dtype
-        self._label_lut = _build_coco_label_lut()
+        # self._label_lut = _build_coco_label_lut()
 
         # Download bboxes + RoI features from HF
         bbox_feature_root = download_100_bbox_256D()
@@ -87,8 +87,9 @@ class EchoViLDDataset(Dataset):
         roi_feat = roi_data["roi_features"].to(self.dtype)  # (300, 256)
 
         # Remap raw COCO category_ids (1..90 with gaps) → compact (0=bg, 1..80)
-        raw_labels = roi_data["labels"].long()
-        labels = self._label_lut[raw_labels]  # (300,)
+        # raw_labels = roi_data["labels"].long()
+        # labels = self._label_lut[raw_labels]  # (300,)
+        labels = roi_data["labels"].long() # (300,)
 
         if self.mock_teacher:
             teacher_emb = torch.randn(self.NUM_PROPOSALS, self.EMBED_DIM, dtype=self.dtype)

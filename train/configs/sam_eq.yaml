@@ -9,7 +9,7 @@ hidden_dim: 512
 embed_dim: 1024
 num_classes: 80
 temperature: 0.01
-lambda_distill: 0.5
+lambda_distill: 45
 
 optimizer: adamw
 lr: 1.0e-4
