@@ -150,9 +150,9 @@ def train(config: dict, mock_teacher: bool = False):
         train_distill_loss = 0.0
 
         for roi_feat, labels, teacher_emb, valid_mask in train_loader:
-            roi_feat    = roi_feat.to(device)
+            roi_feat    = roi_feat.to(device).float()
             labels      = labels.to(device)
-            teacher_emb = teacher_emb.to(device)
+            teacher_emb = teacher_emb.to(device).float()
             valid_mask  = valid_mask.to(device)
 
             optimizer.zero_grad()
@@ -193,9 +193,9 @@ def train(config: dict, mock_teacher: bool = False):
 
         with torch.no_grad():
             for roi_feat, labels, teacher_emb, valid_mask in val_loader:
-                roi_feat    = roi_feat.to(device)
+                roi_feat    = roi_feat.to(device).float()
                 labels      = labels.to(device)
-                teacher_emb = teacher_emb.to(device)
+                teacher_emb = teacher_emb.to(device).float()
                 valid_mask  = valid_mask.to(device)
 
                 with autocast(device.type, enabled=use_amp):

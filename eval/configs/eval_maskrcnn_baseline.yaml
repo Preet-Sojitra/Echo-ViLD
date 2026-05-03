@@ -1,0 +1,10 @@
+# Supervised Mask R-CNN baseline — no Echo-ViLD, uses model's own class predictions
+model_id: maskrcnn_baseline
+baseline_maskrcnn: true
+
+# Data source — requires live images (no precomputed mode for baseline)
+ann_json: /path/to/instances_val2017.json
+image_dir: /path/to/coco/val2017
+
+score_threshold: 0.05
+output_dir: eval_results

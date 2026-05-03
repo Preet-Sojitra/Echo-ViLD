@@ -4,6 +4,7 @@ from pathlib import Path
 from huggingface_hub import snapshot_download
 
 HF_REPO_ID = "preetsojitra/Echo-VilD"
+LOCAL_CLONE_DIR = Path("./data")
 
 # Maps config `image_emb_variant` names → HF folder names under Sam_Peav_Outputs/
 IMAGE_EMB_VARIANTS = {
@@ -16,12 +17,17 @@ IMAGE_EMB_VARIANTS = {
 
 def _download(allow_patterns: list[str]) -> Path:
     """Run a snapshot download restricted to the given glob patterns and return the local path."""
+    if LOCAL_CLONE_DIR.exists():
+        return LOCAL_CLONE_DIR
+    # Fallback to HF (Will likely rate limit if too many files)
+    print("Warning: Local clone not found. Falling back to HF API...")
     token = os.environ.get("HF_TOKEN", None)
     local = snapshot_download(
         repo_id=HF_REPO_ID,
         repo_type="dataset",
         allow_patterns=allow_patterns,
         token=token,
+        max_workers=2
     )
     return Path(local)
 
@@ -46,4 +52,4 @@ def download_image_embeddings(variant: str) -> Path:
 
 def download_text_embeddings(variant: str) -> Path:
     """Download PE-AV text embeddings for a specific variant (single .pt file)."""
-    return _download([f"Text_Embeddings/{variant}.pt"])
+    return _download([f"Text_Embeddings_COCO/{variant}.pt"])

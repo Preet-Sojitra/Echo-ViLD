@@ -30,7 +30,7 @@ class ClassificationHead(nn.Module):
 
         # Load and freeze text embeddings from HF  →  [num_classes, embed_dim]
         text_root = download_text_embeddings(text_emb_variant)
-        text_path = text_root / "Text_Embeddings" / f"{text_emb_variant}.pt"
+        text_path = text_root / "Text_Embeddings_COCO" / f"{text_emb_variant}.pt"
         text_embeddings = torch.load(text_path, map_location="cpu", weights_only=True).float()
 
         assert text_embeddings.shape == (num_classes, embed_dim), (

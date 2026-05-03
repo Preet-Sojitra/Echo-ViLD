@@ -7,3 +7,7 @@ __pycache__
 hf_cache/
 
 **/*.DS_Store
+
+data
+offline_prep/lvis_v1_val.json
+weights/*

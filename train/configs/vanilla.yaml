@@ -15,7 +15,7 @@ optimizer: adamw
 lr: 1.0e-4
 weight_decay: 1.0e-4
 batch_size: 4
-epochs: 10
+epochs: 20
 warmup_steps: 500
 scheduler: cosine
 amp: fp16

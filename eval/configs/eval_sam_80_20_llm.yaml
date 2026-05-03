@@ -1,0 +1,17 @@
+# Echo-ViLD eval config — SAM 80/20 context + LLM text
+model_id: sam_80_20_llm
+ckpt_path: weights/sam_80_20_llm/best.pth
+text_emb_variant: llm_text_embeddings_80
+
+roi_dim: 256
+hidden_dim: 512
+embed_dim: 1024
+temperature: 0.01
+
+precomputed: true
+# ann_json: /path/to/lvis_v1_val.json
+# image_dir: /path/to/coco/val2017
+
+score_threshold: 0.01
+nms_iou: 0.5
+output_dir: eval_results
