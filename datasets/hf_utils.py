@@ -6,7 +6,6 @@ from huggingface_hub import snapshot_download
 HF_REPO_ID = "preetsojitra/Echo-VilD"
 LOCAL_CLONE_DIR = Path("./data")
 
-# Maps config `image_emb_variant` names → HF folder names under Sam_Peav_Outputs/
 IMAGE_EMB_VARIANTS = {
     "vanilla":                "all_baseline",
     "sam_nocontext":          "all_sam_nocontext",
@@ -38,11 +37,6 @@ def download_100_bbox_256D() -> Path:
 
 
 def download_image_embeddings(variant: str) -> Path:
-    """Download PE-AV image embeddings for a specific variant (one .pt per image).
-
-    Also downloads the metadata needed to map variable-length teacher
-    embeddings back to the original 300-proposal indices.
-    """
     hf_folder = IMAGE_EMB_VARIANTS[variant]
     return _download([
         f"Sam_Peav_Outputs/{hf_folder}/*",
@@ -51,5 +45,4 @@ def download_image_embeddings(variant: str) -> Path:
 
 
 def download_text_embeddings(variant: str) -> Path:
-    """Download PE-AV text embeddings for a specific variant (single .pt file)."""
     return _download([f"Text_Embeddings_COCO/{variant}.pt"])

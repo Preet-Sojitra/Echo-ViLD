@@ -1,6 +1,4 @@
-"""
-Main training loop, L1 + CE Loss, saves .pth weights in "weights" folder
-"""
+
 import argparse
 import csv
 import os
@@ -19,7 +17,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Add repo root to sys.path so absolute imports (datasets.*, models.*, train.*) resolve
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from datasets.vild_dataset import EchoViLDDataset
@@ -29,13 +26,11 @@ from train.losses import splitting_loss
 
 
 def build_config(path: str) -> dict:
-    """Load a YAML config file into a dict."""
     with open(path) as f:
         return yaml.safe_load(f)
 
 
 def cosine_schedule_with_warmup(optimizer, warmup_steps: int, total_steps: int):
-    """LR schedule: linear warmup then cosine decay to 0."""
     def lr_lambda(current_step):
         if current_step < warmup_steps:
             return current_step / max(1, warmup_steps)
@@ -45,7 +40,6 @@ def cosine_schedule_with_warmup(optimizer, warmup_steps: int, total_steps: int):
 
 
 def upload_weights_to_hf(ckpt_dir: Path, model_id: str):
-    """Upload best.pth and last.pth to the HuggingFace dataset repo."""
     from huggingface_hub import HfApi
 
     api = HfApi()
@@ -71,18 +65,12 @@ def upload_weights_to_hf(ckpt_dir: Path, model_id: str):
 
 
 def train(config: dict, mock_teacher: bool = False):
-    """Run the full training loop defined by config.
-
-    Args:
-        config:       Dict loaded from a YAML config file.
-        mock_teacher: If True, substitute random tensors for PE-AV teacher embeddings
-    """
     device  = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     use_amp = config.get("amp", "fp16") == "fp16" and device.type == "cuda"
 
     torch.manual_seed(config.get("seed", 42))
 
-    # --- Dataset & loaders ---
+    # Dataset & loaders
     dataset = EchoViLDDataset(
         image_emb_variant=config["image_emb_variant"],
         mock_teacher=mock_teacher,
@@ -95,7 +83,7 @@ def train(config: dict, mock_teacher: bool = False):
     val_loader   = DataLoader(val_dataset,   batch_size=config["batch_size"], shuffle=False,
                               num_workers=2, pin_memory=True)
 
-    # --- Models ---
+    # Models
     proj_head = ProjectionHead(
         roi_dim=config.get("roi_dim", 256),
         hidden_dim=config.get("hidden_dim", 512),
@@ -118,18 +106,15 @@ def train(config: dict, mock_teacher: bool = False):
     )
 
     total_steps = len(train_loader) * config.get("epochs", 10)
-    # Suppress harmless PyTorch warning: LambdaLR.__init__ internally calls
-    # step() before any optimizer.step(), triggering a false-positive.
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore", UserWarning)
-        scheduler = cosine_schedule_with_warmup(
-            optimizer,
-            warmup_steps=config.get("warmup_steps", 500),
-            total_steps=total_steps,
-        )
+
+    scheduler = cosine_schedule_with_warmup(
+        optimizer,
+        warmup_steps=config.get("warmup_steps", 500),
+        total_steps=total_steps,
+    )
     scaler = GradScaler(device.type, enabled=use_amp)
 
-    # --- Logging ---
+    # Logging
     ckpt_dir = Path(config["ckpt_dir"])
     ckpt_dir.mkdir(parents=True, exist_ok=True)
     log_path = Path(config.get("log_csv", str(ckpt_dir / "loss.csv")))
@@ -140,7 +125,7 @@ def train(config: dict, mock_teacher: bool = False):
     lambda_distill = config.get("lambda_distill", 0.5)
     best_val_loss  = float("inf")
 
-    # --- Training loop ---
+    # Training loop
     for epoch in range(1, config.get("epochs", 10) + 1):
         proj_head.train()
         cls_head.train()
@@ -183,7 +168,7 @@ def train(config: dict, mock_teacher: bool = False):
             train_distill_loss / num_train_batches,
         ])
 
-        # --- Validation ---
+        # Validation
         proj_head.eval()
         cls_head.eval()
 
@@ -229,7 +214,7 @@ def train(config: dict, mock_teacher: bool = False):
             f"dist {val_distill_loss/num_val_batches:.4f})"
         )
 
-        # Save checkpoint — .pth extension per project convention
+        # Save checkpoint
         checkpoint = {
             "proj":     proj_head.state_dict(),
             "bg_embed": cls_head.bg_embed.data,
@@ -245,7 +230,7 @@ def train(config: dict, mock_teacher: bool = False):
     log_file.close()
     print(f"Done. Best checkpoint: {ckpt_dir / 'best.pth'}")
 
-    # --- Upload trained weights to HuggingFace ---
+    # Upload trained weights to HuggingFace
     model_id = config.get("model_id", Path(config["ckpt_dir"]).name)
     upload_weights_to_hf(ckpt_dir, model_id)
 

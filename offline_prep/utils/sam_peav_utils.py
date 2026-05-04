@@ -7,9 +7,6 @@ from segment_anything import sam_model_registry, SamPredictor
 from transformers import PeAudioVideoModel, PeAudioVideoProcessor
 import transformers
 
-# Suppress "channel dimension is ambiguous" warning for very small crops (e.g. 4×4 px).
-# We already pass input_data_format="channels_last" but the internal rescale pipeline
-# still warns on tiny images.  The warning is harmless — PE-AV processes them correctly.
 transformers.logging.set_verbosity_error()
 
 def load_peav(model_id, device):
@@ -31,10 +28,10 @@ def load_sam(checkpoint_path, device):
     predictor = SamPredictor(sam)
     return predictor
 
-def l2_normalize(vec: np.ndarray, eps: float = 1e-12) -> np.ndarray:
+def l2_normalize(vec: np.ndarray, eps: float = 1e-12):
     return vec / (np.linalg.norm(vec) + eps)
 
-def image_id_to_filename(image_id: str) -> str:
+def image_id_to_filename(image_id: str):
     return f"{int(image_id):012d}.jpg"
 
 def clamp_box_xyxy(box, width: int, height: int):

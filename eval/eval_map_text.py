@@ -1,8 +1,3 @@
-"""
-Evaluate trained Echo-ViLD models on the LVIS v1.0 Validation Set.
-Calculates AP_r (Rare/Novel categories) to prove Zero-Shot capabilities.
-"""
-
 import os
 import json
 import argparse
@@ -15,7 +10,6 @@ from torchvision.models.detection import maskrcnn_resnet50_fpn, MaskRCNN_ResNet5
 
 from lvis import LVIS, LVISEval
 
-# Import your MLP Projection Head
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -23,7 +17,6 @@ from model.projection_head import ProjectionHead
 
 
 def build_maskrcnn(device):
-    """Load the exact same frozen Mask R-CNN used for feature extraction."""
     weights = MaskRCNN_ResNet50_FPN_Weights.DEFAULT
     model = maskrcnn_resnet50_fpn(weights=weights)
     model.eval()
@@ -76,7 +69,6 @@ def evaluate_lvis(args):
     print("Running Zero-Shot Inference on LVIS Validation Set...")
     for img_id in tqdm(img_ids):
         img_info = lvis_api.load_imgs([img_id])[0]
-        # LVIS uses the coco2017 image names
         img_path = os.path.join(args.coco_img_dir, img_info['coco_url'].split('/')[-1])
         
         if not os.path.exists(img_path):
@@ -100,10 +92,10 @@ def evaluate_lvis(args):
         box_features = maskrcnn.roi_heads.box_roi_pool(features, [boxes], [img_tensor.shape[-2:]])
         roi_feats_256d = box_features.mean(dim=[2, 3]).float() # [N, 256]
 
-        # --- B. Echo-ViLD MLP Projection ---
+        # B. Echo-ViLD MLP Projection
         proj_feat_out = proj_head(roi_feats_256d) # [N, 1024] (Already L2 Normalized)
 
-        # --- C. Zero-Shot Classification (Dot Product) ---
+        # C. Zero-Shot Classification (Dot Product)
         # Cosine similarity -> [N, 1204]
         similarity_scores = proj_feat_out @ class_matrix.T
         logits = similarity_scores / args.temperature
@@ -117,7 +109,7 @@ def evaluate_lvis(args):
         # ViLD TRICK: Multiply class probabilities by Mask R-CNN objectness score
         final_scores = class_probs * obj_scores.unsqueeze(1) # [N, 1203]
 
-        # --- D. Format for LVIS Evaluation ---
+        # D. Format for LVIS Evaluation
         boxes_cpu = boxes.cpu().numpy()
         scores_cpu = final_scores.cpu().numpy()
 
@@ -144,7 +136,7 @@ def evaluate_lvis(args):
     with open(res_file, "w") as f:
         json.dump(results, f)
 
-    # --- E. Calculate mAP ---
+    # E. Calculate mAP
     print("\nStarting Official LVIS Evaluation...")
     lvis_eval = LVISEval(args.ann_file, res_file, "bbox")
     lvis_eval.run()

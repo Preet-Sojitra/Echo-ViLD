@@ -8,8 +8,6 @@ from torch.utils.data import Dataset
 
 from datasets.hf_utils import download_100_bbox_256D, download_image_embeddings, IMAGE_EMB_VARIANTS
 
-# Raw COCO category_ids are non-contiguous (1..90 with gaps).  Build a lookup
-# tensor that maps raw_id -> compact class index (1..80), reserving 0 for background.
 _COCO_DESC_PATH = Path(__file__).parent.parent / "offline_prep" / "coco_class_descriptions.json"
 
 

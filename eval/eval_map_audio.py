@@ -1,8 +1,3 @@
-"""
-Evaluate trained Echo-ViLD models on the VPO-SS Audio-Visual Dataset.
-Proves Zero-Shot acoustic object localization.
-"""
-
 import os
 import argparse
 import numpy as np
@@ -31,7 +26,6 @@ def build_maskrcnn(device):
 
 
 def get_audio_embeddings(audio_dir, categories, peav_model, peav_processor, device):
-    """Pass .wav files through PE-AV to get the 1024-D query vectors."""
     audio_embeds = []
     
     print("Generating PE-AV Audio Embeddings...")
@@ -41,11 +35,11 @@ def get_audio_embeddings(audio_dir, categories, peav_model, peav_processor, devi
             raise FileNotFoundError(f"Missing audio file for category: {cat}")
             
         # Load audio (PE-AV expects 16kHz)
-        waveform, sr = librosa.load(wav_path, sr=16000)
+        waveform, sr = librosa.load(wav_path, sr=48000)
         
         inputs = peav_processor(
             audios=[waveform],
-            sampling_rate=16000,
+            sampling_rate=48000,
             return_tensors="pt"
         )
         inputs = {k: v.to(device) for k, v in inputs.items()}

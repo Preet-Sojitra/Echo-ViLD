@@ -1,4 +1,3 @@
-"""Cosine-similarity classification head with learnable background embedding, built on PE-AV text embeddings."""
 import torch
 import torch.nn as nn
 import torch.nn.functional as F

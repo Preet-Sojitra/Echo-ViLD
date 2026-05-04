@@ -1,6 +1,3 @@
-"""
-Generate text embedding using original ViLD's 63 prompt template strategy and using the LLM based rich description.
-"""
 import os
 import json
 

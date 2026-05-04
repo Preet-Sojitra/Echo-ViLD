@@ -1,4 +1,3 @@
-"""Splitting loss: weighted sum of CE classification loss and L1 distillation loss."""
 import torch
 import torch.nn.functional as F
 
@@ -10,7 +9,7 @@ def splitting_loss(
     labels: torch.Tensor,
     lambda_distill: float = 0.5,
     valid_mask: torch.Tensor | None = None,
-) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+):
     """Compute total_loss = cls_loss + lambda_distill * distill_loss.
 
     Args:
@@ -27,14 +26,14 @@ def splitting_loss(
     """
     batch_size, num_proposals, embed_dim = proj_feat.shape
 
-    # ------- Classification loss (CE) on ALL proposals -------
+    # Classification loss (CE) on ALL proposals
     # Every proposal has a label from IoU matching, so CE trains the
     # classification head (including the learnable background embedding) on all 300.
     flat_logits = logits.float().reshape(batch_size * num_proposals, -1)
     flat_labels = labels.reshape(batch_size * num_proposals)
     cls_loss = F.cross_entropy(flat_logits, flat_labels)
 
-    # ------- Distillation loss (L1) on VALID proposals only -------
+    # Distillation loss (L1) on VALID proposals only 
     # Only proposals that have a teacher embedding contribute to L1.
     if valid_mask is None:
         valid_mask = torch.ones(batch_size, num_proposals, dtype=torch.bool, device=proj_feat.device)

@@ -1,7 +1,3 @@
-"""
-Extract region proposals and ROIAlign features from a pretrained Mask RCNN (torchvision) on COCO images
-"""
-
 import os
 import json
 import argparse
@@ -19,9 +15,6 @@ from huggingface_hub import HfApi
 load_dotenv()
 
 def build_model(device):
-    """
-    Load pretrained Mask RCNN.
-    """
     weights = MaskRCNN_ResNet50_FPN_Weights.DEFAULT
     model = maskrcnn_resnet50_fpn(weights=weights)
     model.eval()
