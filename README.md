@@ -5,6 +5,7 @@
 
 This repository contains the official implementation for **Echo-ViLD**, a research-oriented course project for CS 6384 (Computer Vision) at The University of Texas at Dallas.
 
+
 ## Project Overview
 
 Open-Vocabulary Object Detection (OVD) models, such as [ViLD](https://arxiv.org/abs/2104.13921), successfully distill knowledge from vision-language foundation models (e.g., CLIP) to detect novel categories in a zero-shot manner. However, existing methodologies face two critical limitations:
@@ -15,7 +16,13 @@ Open-Vocabulary Object Detection (OVD) models, such as [ViLD](https://arxiv.org/
 
 By mapping our student detector into PEAV's unified latent space, Echo-ViLD enables true **Zero-Shot Acoustic Object Localization**, allowing users to detect sounding objects using `.wav` audio queries.
 
----
+## Report and Demo:
+
+> To add report once completed.
+
+The demo video is available at [link](https://youtu.be/H-bUSUaLqjo)
+
+Model Weights: [link](https://huggingface.co/datasets/preetsojitra/Echo-VilD/tree/main)
 
 ## Key Features & Novelties
 
@@ -28,25 +35,48 @@ By mapping our student detector into PEAV's unified latent space, Echo-ViLD enab
 
 ## Project Architecture
 
-> To be added later
+Offline Data Preparation:
+
+![Offline Data Preparation](assets/data_prep.png)
+
+Training Methodology:
+
+![Training Methodology](assets/train_archi.png)
 
 
 ## Evaluation Metrics
 
-> To be added later
+### Visual Ablation Study (On [LVIS](https://www.lvisdataset.org/) dataset with text queries):
 
-## Repository Structure
+> All models were trained on 5K COCO subset.
 
-> To be added later
+| | | | | | |
+| --- | --- | --- | --- | --- | --- |
+| Method | Background | Context | Text Prompt Strategy | AP_base | AP_novel |
+|Vanilla PEAV (Baseline) |Rectangular Bounding Box|None |ViLD Templates|21.5|2.3|
+|SAM PEAV |Masked|None |ViLD Templates|21.8|3.8|
+|SAM PEAV (equal) |Masked|Fused |ViLD Templates|20.4|4.5|
+|SAM PEAV (80 20) |Masked |Fused |ViLD Templates|21.2|5.1|
+|Echo-ViLD (SAM PEAV 80 20) |Masked |Fused |LLM|22.1|6.4|
 
-## Datasets
+### Cross Modal eval ([VPO-SS](https://github.com/cyh-0/CAVP) Dataset):
+| | | | |
+| --- | --- | --- | --- |
+| Query Modality | Teacher Space | Dataset |AP_overall|
+|Text Query (Dog barking) | PEAV-Text | VPO-SS | 14.22 |
+|Audio Query (barking.wav) | PEAV-Audio | VPO-SS | 13.8|
 
-> To be added later 
 
 ## Team Members
 
-> To add
+1. Preet Sojitra
+2. Dayoung Lim
+3. Shantanu Shinde
+4. Dagmawet Zemedkun
 
 ## References
 
-> To add
+1. [ViLD Paper](https://arxiv.org/abs/2104.13921)
+2. [Perception Encoder Audio-Visual (PEAV)](https://arxiv.org/abs/2512.19687)
+3. [SAM Paper](https://github.com/facebookresearch/segment-anything)
+4. [VPO-SS](https://arxiv.org/html/2304.02970v6)
