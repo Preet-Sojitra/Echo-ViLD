@@ -11,3 +11,5 @@ hf_cache/
 data
 offline_prep/lvis_v1_val.json
 weights/*
+
+*.mp4

@@ -2,6 +2,9 @@
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/release/python-380/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-EE4C2C.svg)](https://pytorch.org/)
+[![Project Report](https://img.shields.io/badge/Project_Report-PDF-red?logo=adobeacrobatreader&logoColor=white)](Final-Report.pdf)
+[![Demo Video](https://img.shields.io/badge/Demo_Video-YouTube-red?logo=youtube&logoColor=white)](https://youtu.be/H-bUSUaLqjo)
+[![Model Weights](https://img.shields.io/badge/Model_Weights-Hugging_face-orange?logo=huggingface)](https://huggingface.co/datasets/preetsojitra/Echo-VilD/tree/main)
 
 This repository contains the official implementation for **Echo-ViLD**, a research-oriented course project for CS 6384 (Computer Vision) at The University of Texas at Dallas.
 
@@ -16,13 +19,14 @@ Open-Vocabulary Object Detection (OVD) models, such as [ViLD](https://arxiv.org/
 
 By mapping our student detector into PEAV's unified latent space, Echo-ViLD enables true **Zero-Shot Acoustic Object Localization**, allowing users to detect sounding objects using `.wav` audio queries.
 
-## Report and Demo:
+> [!NOTE]
+> **Training Limitation & Future Scope:** Due to resource constraints, the current student detector was trained using only a **5K subset** of the COCO dataset. As a result, the zero-shot accuracy is limited. The future scope of this project is to train on the full dataset to achieve robust zero-shot detection performance.
 
-> To add report once completed.
+## Demo & Resources
 
-The demo video is available at [link](https://youtu.be/H-bUSUaLqjo)
-
-Model Weights: [link](https://huggingface.co/datasets/preetsojitra/Echo-VilD/tree/main)
+- **Project Report:** A comprehensive writeup detailing the methodology, architecture, and results is available in [Final-Report.pdf](Final-Report.pdf).
+- **Demo Video:** Watch the Echo-ViLD demonstration on [YouTube](https://youtu.be/H-bUSUaLqjo).
+- **Pre-trained Weights:** Access model checkpoints and embeddings on [Hugging Face](https://huggingface.co/datasets/preetsojitra/Echo-VilD/tree/main).
 
 ## Key Features & Novelties
 
